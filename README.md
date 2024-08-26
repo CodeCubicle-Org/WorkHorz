@@ -31,3 +31,5 @@ Please join or start the discussions on our Discord server below
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/4YQTgfnKHp)](https://discord.gg/https://discord.gg/4YQTgfnKHp)
 
+
+Note: We are not a commercial company at this moment but a small personally engaged team of professionals.
