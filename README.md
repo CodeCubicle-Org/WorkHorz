@@ -30,6 +30,7 @@ us letting us know what you would like to work on and what your strengths and ex
 
 
 Please join or start the discussions on our Discord server below
+
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/4YQTgfnKHp?theme=default-inverted&logoColor=D50035)](https://discord.gg/https://discord.gg/4YQTgfnKHp)
 
 
