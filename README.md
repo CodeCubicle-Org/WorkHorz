@@ -27,4 +27,4 @@ the art technology and libraries and may refactor the code at any time.
 We are looking for contributors to help us build this engine, if you are interested in contributing please contact
 us letting us know what you would like to work on and what your strengths and expertise are.
 
-Join the discussion on our ![WorkHorz Discord](https://dcbadge.limes.pink/api/shield/1270119226564411546?theme=clean-inverted) server.
+Join the discussion on our ![WorkHorz Discord](https://dcbadge.limes.pink/api/server/1270119226564411546?theme=clean-inverted) server.
