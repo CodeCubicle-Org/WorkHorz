@@ -7,9 +7,11 @@ WorkHorz is developer-friendly, giving easy access to the code in a way develope
 and extending the engine fast and fun.
 
 ## Main Goals & Philosophy
-- **Performance**: The engine is designed to be extremely fast and efficient without much extra efforts.
+- **Performance**: The engine is designed to be extremely fast and efficient without much extra efforts. You only
+pay for what you use.
 - **Scalability**: The engine is designed to be easily scalable, from DevOps tools to big enterprise applications.
-- **Ease of Use**: The easy to use is a core feature to offer everyone access to it be it through LUA or C++.
+- **Ease of Use**: Being easy to use is a core feature to offer everyone access to it be it through LUA or C++.
+- **Convenience**: All most web-applications need are built-in or available as nodes or scripts.
 - **Flexibility**: Flexibility puts a strong a focus on customization to suit all your needs one way or another.
 - **Security**: The engine is designed to be as secure as possible, taking care of a lot of details that are hard to
 implement.
