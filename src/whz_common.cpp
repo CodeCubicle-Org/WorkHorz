@@ -151,7 +151,7 @@ const char forbidden[] =
 const char not_found[] =
     "<html>"
     "<head><title>Not Found</title></head>"
-    "<body><h1>404 Not Found</h1></body>"
+    "<body><h1>200 Default Text</h1></body>"
     "</html>";
 const char internal_server_error[] =
     "<html>"
