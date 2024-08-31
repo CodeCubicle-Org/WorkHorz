@@ -8,8 +8,8 @@ endif()
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
-project(WorkTest VERSION 0.1
-        DESCRIPTION "Workhorz"
+project(WorkHorz VERSION 0.0.1
+        DESCRIPTION "WorkHorz"
         LANGUAGES CXX)
 
 find_package(Catch2 CONFIG REQUIRED)
