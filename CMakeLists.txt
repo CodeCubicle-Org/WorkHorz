@@ -17,6 +17,8 @@ find_package(OpenSSL CONFIG REQUIRED)
 find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 
+find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
+
 add_executable(whz-core src/whz-core.cpp
   src/whz_common.cpp
   src/whz_connection.cpp
@@ -27,7 +29,10 @@ add_executable(whz-core src/whz-core.cpp
   src/whz_request_parser.cpp
   src/whz_server.cpp
   src/whz_utils.cpp
-  src/whz_resources.cpp)
+  src/whz_resources.cpp
+  src/whz_quill_wrapper.cpp)
+
+target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio
