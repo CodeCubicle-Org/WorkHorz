@@ -16,6 +16,7 @@ find_package(Catch2 CONFIG REQUIRED)
 find_package(OpenSSL CONFIG REQUIRED)
 find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
+find_package(CLI11 CONFIG REQUIRED)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -32,13 +33,15 @@ add_executable(whz-core src/whz-core.cpp
   src/whz_resources.cpp
   src/whz_quill_wrapper.cpp)
 
+
 target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio
   fmt::fmt
   OpenSSL::SSL
-  OpenSSL::Crypto)
+  OpenSSL::Crypto
+  CLI11::CLI11)
 
 if (BUILD_TESTING)
   message("Building tests")
