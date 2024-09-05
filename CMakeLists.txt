@@ -18,16 +18,17 @@ find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 
 add_executable(whz-core src/whz-core.cpp
-  src/whz_common.cpp
-  src/whz_connection.cpp
-  src/whz_io_context_pool.cpp
-  src/whz_ssl_connection.cpp
-  src/whz_request.cpp
-  src/whz_request_handler.cpp
-  src/whz_request_parser.cpp
-  src/whz_server.cpp
-  src/whz_utils.cpp
-  src/whz_resources.cpp)
+               src/whz_common.cpp
+               src/whz_connection.cpp
+               src/whz_io_context_pool.cpp
+               src/whz_ssl_connection.cpp
+               src/whz_request.cpp
+               src/whz_request_handler.cpp
+               src/whz_request_parser.cpp
+               src/whz_server.cpp
+               src/whz_utils.cpp
+               src/whz_resources.cpp
+               src/whz_config.cpp)
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio

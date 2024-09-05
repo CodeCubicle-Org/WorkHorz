@@ -1,5 +1,4 @@
-#ifndef WHZ_COMMON_H_
-#define WHZ_COMMON_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -54,5 +53,3 @@ auto to_buffer(whz::reply::status_type status) -> boost::asio::const_buffer;
 auto reply_to_string(whz::reply::status_type status) -> std::string;
 
 }; // namespace whz
-
-#endif // WHZ_COMMON_H_

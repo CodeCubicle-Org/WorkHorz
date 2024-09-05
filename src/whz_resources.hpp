@@ -1,6 +1,4 @@
-#ifndef WHZ_RESOURCES_H_
-#define WHZ_RESOURCES_H_
-
+#pragma once
 //
 // Created by patle on 25/07/2024.
 //
@@ -82,5 +80,3 @@ class resources {
                               /// buffer for images
 };
 } // namespace WHZ
-
-#endif // WHZ_RESOURCES_H_

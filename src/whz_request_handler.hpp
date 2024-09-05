@@ -1,5 +1,4 @@
-#ifndef WHZ_REQUEST_HANDLER_H_
-#define WHZ_REQUEST_HANDLER_H_
+#pragma once
 
 #include <filesystem>
 #include "whz_common.hpp"
@@ -16,5 +15,3 @@ class request_handler {
   std::filesystem::path document_root;
 };
 }; // namespace whz
-
-#endif // WHZ_REQUEST_HANDLER_H_

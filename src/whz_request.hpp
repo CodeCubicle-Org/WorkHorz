@@ -1,5 +1,4 @@
-#ifndef WHZ_REQUEST_H_
-#define WHZ_REQUEST_H_
+#pragma once
 
 #include <string>
 
@@ -17,5 +16,3 @@ class request {
 };
 
 }; // namespace whz
-
-#endif // WHZ_REQUEST_H_

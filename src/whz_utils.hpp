@@ -1,5 +1,4 @@
-#ifndef WHZ_UTILS_H_
-#define WHZ_UTILS_H_
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -35,4 +34,3 @@ static auto url_decode(const std::string& url) -> std::optional<std::string> {
   }
   return result;
 };
-#endif // WHZ_UTILS_H_

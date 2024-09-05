@@ -1,5 +1,4 @@
-#ifndef WHZ_CONNECTION_H_
-#define WHZ_CONNECTION_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -41,4 +40,3 @@ class connection : public std::enable_shared_from_this<connection> {
 using http_connection_ptr = std::shared_ptr<connection>;
 
 }; // namespace whz
-#endif // WHZ_CONNECTION_H_

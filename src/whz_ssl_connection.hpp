@@ -1,5 +1,4 @@
-#ifndef WHZ_SSL_CONNECTION_H_
-#define WHZ_SSL_CONNECTION_H_
+#pragma once
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
@@ -37,5 +36,3 @@ class ssl_connection : public std::enable_shared_from_this<ssl_connection> {
 
 using connection_ptr = std::shared_ptr<ssl_connection>;
 } // namespace whz
-
-#endif // WHZ_SSL_CONNECTION_H_
