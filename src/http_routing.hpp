@@ -22,7 +22,7 @@ using  MMPathlist = std::unordered_multimap<std::string, std::string>;
 
 class http_routing {
 public:
-  http_routing(
+    explicit http_routing(
      const std::string& basedomain); /// Constructor, takes a string of the base-domain: e.g. "www.basedomain.ch"
   virtual ~http_routing() = default;
 

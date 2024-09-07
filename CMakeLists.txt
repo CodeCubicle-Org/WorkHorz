@@ -8,15 +8,13 @@ endif()
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
-project(WorkHorz VERSION 0.0.1
-        DESCRIPTION "WorkHorz"
-        LANGUAGES CXX)
+project(WorkHorz VERSION 0.0.1 DESCRIPTION "WorkHorz" LANGUAGES CXX)
 
-find_package(Catch2 CONFIG REQUIRED)
 find_package(OpenSSL CONFIG REQUIRED)
 find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
+find_package(Catch2 CONFIG REQUIRED)
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
@@ -29,7 +27,8 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_server.cpp
                src/whz_utils.cpp
                src/whz_resources.cpp
-               src/whz_config.cpp)
+               src/whz_config.cpp
+               src/whz_http_routing.cpp)
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio
