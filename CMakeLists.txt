@@ -15,6 +15,7 @@ find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
+find_package(sol2 CONFIG REQUIRED)
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
@@ -28,7 +29,10 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_utils.cpp
                src/whz_resources.cpp
                src/whz_config.cpp
-               src/whz_http_routing.cpp)
+               src/whz_http_routing.cpp
+               src/whz_LUA_core.cpp
+               src/whz_LUA_api.cpp
+)
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio
@@ -45,7 +49,7 @@ if (BUILD_TESTING)
   include(Catch)
 
   add_executable(sample_tests tests/factorial.cpp)
-  target_link_libraries(sample_tests PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
+  target_link_libraries(sample_tests PRIVATE Catch2::Catch2 Catch2::Catch2WithMain sol2)
 
   catch_discover_tests(sample_tests)
 endif ()
