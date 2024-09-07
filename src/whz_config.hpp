@@ -4,11 +4,13 @@
 
 #pragma once
 
-//#include <simdjson.h>
+#include <simdjson.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <cstdint>
+#include <any>
 
 namespace whz {
 
@@ -18,10 +20,10 @@ namespace whz {
         ~Config() = default;
 
         bool read_config(std::string sfilepath = "");
-        bool is_config_loaded() { return m_bConfigLoaded; };
+        bool is_config_loaded() const { return m_bConfigLoaded; };
         bool relaod_config() { return read_config(); };
 
-        enum class ConfigParameter {
+        enum class ConfigParameter: uint8_t {
             UNKNOWN = 0,            // Reserved, do not use
             SERVER_HTTP_PORT,       // HTTP port to listen on
             SERVER_HTTPS_PORT,      // HTTPS port to listen on
@@ -52,6 +54,9 @@ namespace whz {
             LUA_SCRIPT_PATH,        // Path to the user Lua scripts
             LUA_START_SCRIPT_FILENAME,  // Filename of the Lua script to run at startup
         };
+
+        std::any get_config_value(ConfigParameter eParam);
+
 
     private:
         bool m_bConfigLoaded = false;

@@ -16,6 +16,7 @@ find_package(Catch2 CONFIG REQUIRED)
 find_package(OpenSSL CONFIG REQUIRED)
 find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
+find_package(simdjson CONFIG REQUIRED)
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
@@ -34,7 +35,10 @@ target_link_libraries(whz-core PRIVATE
   Boost::asio
   fmt::fmt
   OpenSSL::SSL
-  OpenSSL::Crypto)
+  OpenSSL::Crypto
+  simdjson::simdjson
+  Catch2::Catch2 Catch2::Catch2WithMain
+)
 
 if (BUILD_TESTING)
   message("Building tests")
