@@ -20,7 +20,7 @@ namespace whz {
         ~Config() = default;
 
         bool read_config(std::string sfilepath = "");
-        bool is_config_loaded() const { return m_bConfigLoaded; };
+        [[nodiscard]] bool is_config_loaded() const { return m_bConfigLoaded; };
         bool relaod_config() { return read_config(); };
 
         enum class ConfigParameter: uint8_t {
@@ -57,10 +57,36 @@ namespace whz {
 
         std::any get_config_value(ConfigParameter eParam);
 
-
     private:
         bool m_bConfigLoaded = false;
-
+        std::any server_http_port;
+        std::any server_https_port;
+        std::any server_rootpath;
+        std::any server_logpath;
+        std::any server_log_level_min;
+        std::any server_log_filename;
+        std::any server_log_postfix;
+        std::any server_log_rotation;
+        std::any connection_timeout_ms;
+        std::any server_domainname;
+        std::any server_ssl_certpath;
+        std::any connection_max_io_context;
+        std::any connection_use_iouring;
+        std::any threadpool_size;
+        std::any cpu_cores;
+        std::any requests_active_max;
+        std::any requests_queued_max;
+        std::any available_nodenames;
+        std::any whz_cli_path;
+        std::any database_path;
+        std::any database_name;
+        std::any database_user;
+        std::any database_password;
+        std::any database_port;
+        std::any database_host;
+        std::any database_engine;
+        std::any lua_script_path;
+        std::any lua_start_script_filename;
     };
 
 } // whz
