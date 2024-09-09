@@ -26,7 +26,6 @@ namespace whz {
                 std::cerr << "Error: " << error << std::endl;
             } else {
                 std::string key = "";
-                //std::any value;
 
                 for (auto &param: doc.get_object()) {
                     key = std::any_cast<std::string const &>(param.key);
