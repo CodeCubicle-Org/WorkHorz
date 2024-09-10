@@ -16,7 +16,7 @@
 #include <boost/url.hpp>
 
 
-namespace WHZ {
+namespace whz {
 
 using  MMPathlist = std::unordered_multimap<std::string, std::string>;
 

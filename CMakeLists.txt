@@ -32,6 +32,7 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_http_routing.cpp
                src/whz_LUA_core.cpp
                src/whz_LUA_api.cpp
+               src/whz_renderer.cpp
 )
 
 target_link_libraries(whz-core PRIVATE
