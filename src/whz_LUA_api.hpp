@@ -3,6 +3,8 @@
 //
 #pragma once
 
+//#include "whz_LUA_core.hpp"
+
 namespace whz {
 
     /**
@@ -11,6 +13,12 @@ namespace whz {
      *
      */
     class whz_LUA_api {
+    public:
+        whz_LUA_api() = default;
+        ~whz_LUA_api() = default;
+
+
+    private:
 
     };
 
