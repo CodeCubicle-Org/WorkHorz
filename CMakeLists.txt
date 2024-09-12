@@ -60,7 +60,6 @@ target_link_libraries(whz-core PRIVATE
   sol2
   ${LUA_LIBRARIES}
   CLI11::CLI11
-  #fmt::fmt-header-only
   fmt::fmt
   ftxui::dom ftxui::screen ftxui::component
 )
