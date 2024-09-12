@@ -20,6 +20,7 @@ find_package(sol2 CONFIG REQUIRED)
 find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
+# find_package(libsodium CONFIG REQUIRED) # requires autoconfig installed
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
