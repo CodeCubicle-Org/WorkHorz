@@ -15,6 +15,7 @@ find_package(boost_asio REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
+find_package(lua REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
 find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
@@ -46,6 +47,8 @@ target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
 find_path(RANG_INCLUDE_DIRS "rang.hpp")
 target_include_directories(whz-core PRIVATE ${RANG_INCLUDE_DIRS})
 
+target_include_directories(whz-core PRIVATE ${LUA_INCLUDE_DIRS})
+
 target_link_libraries(whz-core PRIVATE
   Boost::asio
   fmt::fmt
@@ -55,6 +58,7 @@ target_link_libraries(whz-core PRIVATE
   Catch2::Catch2 Catch2::Catch2WithMain
   Taskflow::Taskflow
   sol2
+  ${LUA_LIBRARIES}
   CLI11::CLI11
   #fmt::fmt-header-only
   fmt::fmt
@@ -67,7 +71,7 @@ if (BUILD_TESTING)
   include(Catch)
 
   add_executable(sample_tests tests/factorial.cpp)
-  target_link_libraries(sample_tests PRIVATE Catch2::Catch2 Catch2::Catch2WithMain sol2)
+  target_link_libraries(sample_tests PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
 
   catch_discover_tests(sample_tests)
 endif ()
