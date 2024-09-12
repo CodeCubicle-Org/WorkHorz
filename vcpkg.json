@@ -49,6 +49,10 @@
       "platform": "(windows & x64) | (linux & x64)"
     },
     {
+      "name": "ftxui",
+      "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
       "name": "boost-asio",
       "platform": "(windows & x64) | (linux & x64)",
       "features": [
