@@ -16,6 +16,8 @@ find_package(fmt CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(sol2 CONFIG REQUIRED)
+find_package(Taskflow CONFIG REQUIRED)
+find_package(CLI11 CONFIG REQUIRED)
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
@@ -35,6 +37,12 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_renderer.cpp
 )
 
+find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
+target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
+
+find_path(RANG_INCLUDE_DIRS "rang.hpp")
+target_include_directories(whz-core PRIVATE ${RANG_INCLUDE_DIRS})
+
 target_link_libraries(whz-core PRIVATE
   Boost::asio
   fmt::fmt
@@ -42,6 +50,10 @@ target_link_libraries(whz-core PRIVATE
   OpenSSL::Crypto
   simdjson::simdjson
   Catch2::Catch2 Catch2::Catch2WithMain
+  fmt
+  Taskflow::Taskflow
+  sol2
+  CLI11::CLI11
 )
 
 if (BUILD_TESTING)
