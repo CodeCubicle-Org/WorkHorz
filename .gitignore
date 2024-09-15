@@ -34,3 +34,6 @@
 .cache/
 /build/*
 /vcpkg_installed/*
+/${Home}/build/linux-debug
+/${Home}/build/linux-release
+/cmake-build-debug

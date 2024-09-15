@@ -1,6 +1,17 @@
 {
   "dependencies": [
     {
+      "name": "boost-asio",
+      "features": [
+        "ssl"
+      ],
+      "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
+      "name": "boost-url",
+      "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
       "name": "catch2",
       "platform": "(windows & x64) | (linux & x64)"
     },
@@ -9,11 +20,15 @@
       "platform": "(windows & x64) | (linux & x64)"
     },
     {
-      "name": "lua",
+      "name": "fmt",
       "platform": "(windows & x64) | (linux & x64)"
     },
     {
-      "name": "fmt",
+      "name": "ftxui",
+      "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
+      "name": "lua",
       "platform": "(windows & x64) | (linux & x64)"
     },
     {
@@ -46,17 +61,6 @@
     },
     {
       "name": "taskflow",
-      "platform": "(windows & x64) | (linux & x64)"
-    },
-    {
-      "name": "boost-asio",
-      "platform": "(windows & x64) | (linux & x64)",
-      "features": [
-        "ssl"
-      ]
-    },
-    {
-      "name": "boost-url",
       "platform": "(windows & x64) | (linux & x64)"
     }
   ]

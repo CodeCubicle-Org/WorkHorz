@@ -1,5 +1,4 @@
-#ifndef WHZ_SERVER_H_
-#define WHZ_SERVER_H_
+#pragma once
 
 #include <cstdint>
 #include <filesystem>
@@ -72,5 +71,3 @@ class server {
 };
 
 }; // namespace whz
-
-#endif // WHZ_SERVER_H_

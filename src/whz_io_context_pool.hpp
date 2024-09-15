@@ -1,5 +1,4 @@
-#ifndef WHZ_IO_CONTEXT_POOL_H_
-#define WHZ_IO_CONTEXT_POOL_H_
+#pragma once
 
 #include <list>
 #include <memory>
@@ -35,5 +34,3 @@ class io_context_pool {
   std::size_t next_io_context;
 };
 }; // namespace whz
-
-#endif // WHZ_IO_CONTEXT_POOL_H_

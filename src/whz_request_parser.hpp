@@ -1,5 +1,4 @@
-#ifndef WHZ_REQUEST_PARSER_H_
-#define WHZ_REQUEST_PARSER_H_
+#pragma once
 
 #include <cstdint>
 #include <tuple>
@@ -61,5 +60,3 @@ class request_parser {
 };
 
 }; // namespace whz
-
-#endif // WHZ_REQUEST_PARSER_H_
