@@ -14,10 +14,14 @@
 
 namespace whz {
 
-    class Config {
+    class Config final{
     public:
-        Config() = default;
-        ~Config() = default;
+        // Singleton pattern
+        // Use only the get_instance() method to get the instance of the Config class, never the constructor!
+        static Config& get_instance() {
+            static Config _cfg;
+            return _cfg;
+        }
 
         bool read_config(std::string sfilepath = "");
         [[nodiscard]] bool is_config_loaded() const { return m_bConfigLoaded; };
@@ -58,6 +62,14 @@ namespace whz {
         std::any get_config_value(ConfigParameter eParam);
 
     private:
+        // Declarations to prevent copy and move operations for a singleton
+        Config() = default;
+        ~Config() = default;
+        Config(Config const&) = delete;
+        Config& operator=(Config const&) = delete;
+        Config(Config&&) = delete;
+        Config& operator=(Config&&) = delete;
+
         bool m_bConfigLoaded = false;
         std::any server_http_port;
         std::any server_https_port;

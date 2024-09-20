@@ -70,7 +70,8 @@ namespace whz {
         }
 
         try {
-            this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::math, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
+            //this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::math, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
+            this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
             //this->_lua01.script_file(this->_startup_script_path);
             this->_lua01.script(this->_startup_script_content_str);
             bRet = true;
@@ -87,6 +88,32 @@ namespace whz {
      */
     void whz_LUA_core::init_LUA_user_api(void) {
         // Call all the public functions and data definitions in the LUA API
+    }
+
+    /**
+     * @brief Initialize the LUA scripting engine with a startup script defined in config, do this once before running
+     * the LUA startup script.
+     *
+     * @return true All good
+     * @return false Didn't work abort all
+     */
+    bool whz_LUA_core::init_LUA(void) {
+        this->get_LUA_startup_script_path();
+        return init_LUA(this->_startup_script_path);
+    }
+
+    bool whz_LUA_core::get_LUA_startup_script_path(void) {
+        bool bRet = false;
+
+        // Check if the LUA startup script is defined in the config class
+        if (this->_whz_config.is_config_loaded()) {
+            std::any lua_script_path = this->_whz_config.get_config_value(whz::Config::ConfigParameter::LUA_START_SCRIPT_FILENAME);
+            if (lua_script_path.has_value()) {
+                this->_startup_script_path = std::any_cast<std::string>(lua_script_path);
+                bRet = true;
+            }
+        }
+        return bRet;
     }
 
 } // whz
