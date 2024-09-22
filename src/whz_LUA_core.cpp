@@ -56,12 +56,13 @@ namespace whz {
 
     /**
      * @brief Run the LUA startup script, this is the main entry point to the user's LUA based application. Run the
-     * init_LUA() once before running this.
+     * init_LUA() once before running this. This function will potentially run for a very long time we don't know what
+     * the user's LUA script does.
      *
      * @return true All good
      * @return false Didn't work abort all
      */
-    bool whz_LUA_core::run_LUA_startup_script(void) {
+    bool whz_LUA_core::run_LUA_startup_script() {
         bool bRet = false;
 
         if (this->_startup_script_path.empty()) {
@@ -70,6 +71,11 @@ namespace whz {
         }
 
         try {
+            // Set the LUA GC mode
+            this->_lua01.supports_gc_mode(sol::gc_mode::incremental);
+
+            std::cout << "Test if LUA GC is turned on: " << this->_lua01.is_gc_on() << std::endl; // Check if GC is on
+
             //this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::math, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
             this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
             //this->_lua01.script_file(this->_startup_script_path);
@@ -78,7 +84,8 @@ namespace whz {
         } catch (const std::exception& e) {
             std::cerr << "Error running the LUA startup script (" << this->_startup_script_path << "): " << e.what() << std::endl;
         }
-
+        // Run the GC right now to clean up the LUA memory
+        this->_lua01.collect_garbage();
         return bRet;
     }
 
@@ -86,7 +93,7 @@ namespace whz {
      * @brief Initialize the LUA user facing API by calling all the public function and data definitions. Facade!
      *
      */
-    void whz_LUA_core::init_LUA_user_api(void) {
+    void whz_LUA_core::init_LUA_user_api() {
         // Call all the public functions and data definitions in the LUA API
     }
 
@@ -97,12 +104,12 @@ namespace whz {
      * @return true All good
      * @return false Didn't work abort all
      */
-    bool whz_LUA_core::init_LUA(void) {
+    bool whz_LUA_core::init_LUA() {
         this->get_LUA_startup_script_path();
         return init_LUA(this->_startup_script_path);
     }
 
-    bool whz_LUA_core::get_LUA_startup_script_path(void) {
+    bool whz_LUA_core::get_LUA_startup_script_path() {
         bool bRet = false;
 
         // Check if the LUA startup script is defined in the config class
@@ -112,6 +119,23 @@ namespace whz {
                 this->_startup_script_path = std::any_cast<std::string>(lua_script_path);
                 bRet = true;
             }
+        }
+        return bRet;
+    }
+
+    /**
+     * @brief Do 1 step in the LUA garbage collector with the preconfigured step size. Or 100KB if not defined or invalid.
+     *
+     * @return true The collectgarbage will return true if the triggered step was the last step of a garbage-collection cycle.
+     * @return false False if the step wasn't the last one of the cycle.
+     */
+    bool whz_LUA_core::step_LUA_gc() {
+        bool bRet = false;
+        if (whz::Config::get_instance().get_config_value(whz::Config::ConfigParameter::LUA_GC_STEPSIZE).has_value()) {
+            bRet = this->_lua01.step_gc(std::any_cast<int>(whz::Config::get_instance().get_config_value(whz::Config::ConfigParameter::LUA_GC_STEPSIZE))); // cast any to int
+        }
+        else {
+            bRet = this->_lua01.step_gc(100); // Default to 100 KB
         }
         return bRet;
     }

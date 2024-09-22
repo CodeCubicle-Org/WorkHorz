@@ -28,7 +28,8 @@ namespace whz {
         bool init_LUA(const std::string& startup_script_path); /// Initialize the LUA scripting engine with a startup script defined in config
         bool init_LUA(const std::filesystem::path& startup_script_path);
         bool init_LUA(void); /// Initialize the LUA scripting engine with a startup script defined in config
-        bool run_LUA_startup_script(void);
+        bool run_LUA_startup_script(void); /// Runs until all scripts are done and return
+        bool step_LUA_gc(void); /// Do 1 step in the LUA garbage collector with the preconfigured step size
 
     protected:
         void init_LUA_user_api(void); /// Initialize the LUA user facing API

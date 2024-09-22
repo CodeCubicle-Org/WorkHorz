@@ -9,7 +9,7 @@
 #include <boost/asio/ssl.hpp>
 #include <openssl/ssl.h>
 
-static auto url_decode(const std::string& url) -> std::optional<std::string> {
+[[maybe_unused]] static auto url_decode(const std::string& url) -> std::optional<std::string> {
   std::string result{};
 
   for (std::size_t i = 0; i < url.size(); ++i) {

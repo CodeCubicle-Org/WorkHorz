@@ -57,6 +57,7 @@ namespace whz {
             DATABASE_ENGINE,        // Currently only SQLite
             LUA_SCRIPT_PATH,        // Path to the user Lua scripts
             LUA_START_SCRIPT_FILENAME,  // Filename of the Lua script to run at startup
+            LUA_GC_STEPSIZE,        // Number of steps to run the Lua garbage collector in KB
         };
 
         std::any get_config_value(ConfigParameter eParam);
@@ -99,6 +100,7 @@ namespace whz {
         std::any database_engine;
         std::any lua_script_path;
         std::any lua_start_script_filename;
+        std::any lua_gc_stepsize;
     };
 
 } // whz
