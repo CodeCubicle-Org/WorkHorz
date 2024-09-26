@@ -13,7 +13,7 @@ namespace whz {
      * @param sfilepath The path to the configuration file as string
      * @return bool True if the configuration file was loaded and read successfully, false otherwise
      */
-    bool Config::read_config(std::string sfilepath) {
+    bool Config::read_config(const std::string& sfilepath) {
         bool bRet = false;
 
         // Check that the file sfilepath exists

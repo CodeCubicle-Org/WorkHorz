@@ -42,7 +42,7 @@ auto main() -> int {
   // REQ: Close request.
 
 
-  whz::server s{"0.0.0.0", 8080, path, 1};
+  whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
   s.listen_and_serve();
   return 0;

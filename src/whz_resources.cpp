@@ -18,7 +18,7 @@ resources::~resources() {
  * @param sfilepath The full path to the resource file
  * @return True if the file was loaded
  */
-bool resources::loadResource(std::string sfilepath) {
+bool resources::loadResource(const std::string& sfilepath) {
   bool bRet = false;
   bool bFileExists = false;
 
@@ -48,7 +48,7 @@ bool resources::loadResource(std::string sfilepath) {
         ifs.seekg(0, std::ios::beg);
         ifs.read(&tStr[0], tStr.size());
 
-        this->_resourceContentStr = tStr;
+        this->_resourceContentStr = std::move(tStr);
       }
 
       auto fsize = ifs.tellg();
@@ -60,7 +60,7 @@ bool resources::loadResource(std::string sfilepath) {
       ifs.seekg(0, std::ios::beg);
       ifs.read(&tStr[0], tStr.size());
 
-      this->_resourceContentStr = tStr;
+      this->_resourceContentStr = std::move(tStr);
       // Check the io state of the stream
       if (ifs.good()) {
         bRet = true;

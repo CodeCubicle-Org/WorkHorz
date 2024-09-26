@@ -23,7 +23,7 @@ namespace whz {
             return _cfg;
         }
 
-        bool read_config(std::string sfilepath = "");
+        bool read_config(const std::string& sfilepath = {});
         [[nodiscard]] bool is_config_loaded() const { return m_bConfigLoaded; };
         bool relaod_config() { return read_config(); };
 
@@ -64,7 +64,7 @@ namespace whz {
 
     private:
         // Declarations to prevent copy and move operations for a singleton
-        Config() = default;
+        Config()  = default;
         ~Config() = default;
         Config(Config const&) = delete;
         Config& operator=(Config const&) = delete;
@@ -72,6 +72,7 @@ namespace whz {
         Config& operator=(Config&&) = delete;
 
         bool m_bConfigLoaded = false;
+        std::string config_filepath;
         std::any server_http_port;
         std::any server_https_port;
         std::any server_rootpath;
