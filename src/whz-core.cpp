@@ -2,6 +2,15 @@
 #include <print>
 #include "whz_server.hpp"
 
+
+/**
+ * \mainpage whz-core.cpp
+ * \author WorkHorz developers
+ * \version 0.0.1
+ * \see http://github.com/code-cubicle.org/workhorz
+ *
+ * Main entrypoint for WorkHorz
+ */
 auto main() -> int {
   std::filesystem::path path{"/tmp/whz"};
 
