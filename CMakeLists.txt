@@ -21,6 +21,8 @@ find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
 
+find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
+
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
                src/whz_connection.cpp
@@ -37,10 +39,18 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_LUA_core.cpp
                src/whz_LUA_api.cpp
                src/whz_renderer.cpp
+
+               src/whz_quill_wrapper.cpp
+)
+
+# set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
+
+=======
                src/templateCache.cpp
 )
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
+
 target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
 
 find_path(RANG_INCLUDE_DIRS "rang.hpp")
