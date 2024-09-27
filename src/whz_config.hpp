@@ -14,12 +14,16 @@
 
 namespace whz {
 
-    class Config {
+    class Config final{
     public:
-        Config() = default;
-        ~Config() = default;
+        // Singleton pattern
+        // Use only the get_instance() method to get the instance of the Config class, never the constructor!
+        static Config& get_instance() {
+            static Config _cfg;
+            return _cfg;
+        }
 
-        bool read_config(std::string sfilepath = "");
+        bool read_config(const std::string& sfilepath = {});
         [[nodiscard]] bool is_config_loaded() const { return m_bConfigLoaded; };
         bool relaod_config() { return read_config(); };
 
@@ -53,12 +57,22 @@ namespace whz {
             DATABASE_ENGINE,        // Currently only SQLite
             LUA_SCRIPT_PATH,        // Path to the user Lua scripts
             LUA_START_SCRIPT_FILENAME,  // Filename of the Lua script to run at startup
+            LUA_GC_STEPSIZE,        // Number of steps to run the Lua garbage collector in KB
         };
 
         std::any get_config_value(ConfigParameter eParam);
 
     private:
+        // Declarations to prevent copy and move operations for a singleton
+        Config()  = default;
+        ~Config() = default;
+        Config(Config const&) = delete;
+        Config& operator=(Config const&) = delete;
+        Config(Config&&) = delete;
+        Config& operator=(Config&&) = delete;
+
         bool m_bConfigLoaded = false;
+        std::string config_filepath;
         std::any server_http_port;
         std::any server_https_port;
         std::any server_rootpath;
@@ -87,6 +101,7 @@ namespace whz {
         std::any database_engine;
         std::any lua_script_path;
         std::any lua_start_script_filename;
+        std::any lua_gc_stepsize;
     };
 
 } // whz

@@ -28,6 +28,18 @@ auto main(int argc, char** argv) -> int {
 
   LOG_INFO(logger, "Starting WHZ");
 
+=======
+
+/**
+ * \mainpage whz-core.cpp
+ * \author WorkHorz developers
+ * \version 0.0.1
+ * \see http://github.com/code-cubicle.org/workhorz
+ *
+ * Main entrypoint for WorkHorz
+ */
+auto main() -> int {
+
   std::filesystem::path path{"/tmp/whz"};
 
   // SETUP Stage (low level C++)
@@ -67,7 +79,7 @@ auto main(int argc, char** argv) -> int {
   // REQ: Close request.
 
 
-  whz::server s{"0.0.0.0", 8080, path, 1};
+  whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
   s.listen_and_serve();
   return 0;

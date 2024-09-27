@@ -32,7 +32,7 @@ class resources {
 
   // std::optional<Resources&>
   bool loadResource(
-      std::string sfilepath); /// Load a resource file and return false if the
+      const std::string& sfilepath); /// Load a resource file and return false if the
                               /// file could not be loaded
   bool unloadResource(); /// Free the memory resources for this file
   bool resourceExists(); /// Check if the resource file exists

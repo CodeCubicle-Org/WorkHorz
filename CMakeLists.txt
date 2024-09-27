@@ -20,7 +20,6 @@ find_package(sol2 CONFIG REQUIRED)
 find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
-# find_package(libsodium CONFIG REQUIRED) # requires autoconfig installed
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -40,10 +39,17 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_LUA_core.cpp
                src/whz_LUA_api.cpp
                src/whz_renderer.cpp
+
                src/whz_quill_wrapper.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
+
+=======
+               src/templateCache.cpp
+)
+
+find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
 
 target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
 
@@ -77,3 +83,26 @@ if (BUILD_TESTING)
 
   catch_discover_tests(sample_tests)
 endif ()
+
+set(BUILD_DOC OFF) # Disable Doxygen for now
+if (BUILD_DOC)
+  find_package(Doxygen)
+  if (DOXYGEN_FOUND)
+    set(abs_top_srcdir ${CMAKE_CURRENT_SOURCE_DIR})
+    set(abs_top_builddir ${CMAKE_CURRENT_BINARY_DIR})
+    message(${CMAKE_CURRENT_SOURCE_DIR})
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    message("Doxygen build started")
+
+    add_custom_target(doc_doxygen ALL
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating API documentation with Doxygen"
+      VERBATIM)
+  else (DOXYGEN_FOUND)
+    message("Doxygen needs to be installed to generate doxygen documentation")
+  endif (DOXYGEN_FOUND)
+endif()

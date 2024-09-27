@@ -13,7 +13,7 @@ namespace whz {
      * @param sfilepath The path to the configuration file as string
      * @return bool True if the configuration file was loaded and read successfully, false otherwise
      */
-    bool Config::read_config(std::string sfilepath) {
+    bool Config::read_config(const std::string& sfilepath) {
         bool bRet = false;
 
         // Check that the file sfilepath exists
@@ -59,6 +59,7 @@ namespace whz {
                     else if (key == "DATABASE_ENGINE") paramEnum = ConfigParameter::DATABASE_ENGINE;
                     else if (key == "LUA_SCRIPT_PATH") paramEnum = ConfigParameter::LUA_SCRIPT_PATH;
                     else if (key == "LUA_START_SCRIPT_FILENAME") paramEnum = ConfigParameter::LUA_START_SCRIPT_FILENAME;
+                    else if (key == "LUA_GC_STEPSIZE") paramEnum = ConfigParameter::LUA_GC_STEPSIZE;
 
                     switch (paramEnum) {
                         case ConfigParameter::SERVER_HTTP_PORT:
@@ -144,6 +145,9 @@ namespace whz {
                             break;
                         case ConfigParameter::LUA_START_SCRIPT_FILENAME:
                             lua_start_script_filename = std::string(param.value.get_c_str());
+                            break;
+                            case ConfigParameter::LUA_GC_STEPSIZE:
+                            lua_gc_stepsize = param.value.get_uint64();
                             break;
                         default:
                             break;
@@ -253,6 +257,9 @@ namespace whz {
                 break;
             case ConfigParameter::LUA_START_SCRIPT_FILENAME:
                 value = lua_start_script_filename;
+                break;
+                case ConfigParameter::LUA_GC_STEPSIZE:
+                value = lua_gc_stepsize;
                 break;
             default:
                 value = "Unknown";

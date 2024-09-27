@@ -10,7 +10,7 @@
 namespace whz {
 io_context_pool::io_context_pool(std::size_t pool_size) : next_io_context(0) {
   if (pool_size == 0) {
-    fmt::printf("io_context_pol size is 0");
+    fmt::printf("io_context_pool size is 0");
     exit(1);
   }
 
