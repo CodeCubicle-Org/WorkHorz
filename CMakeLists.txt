@@ -12,6 +12,8 @@ project(WorkHorz VERSION 0.0.1 DESCRIPTION "WorkHorz" LANGUAGES CXX)
 
 find_package(OpenSSL CONFIG REQUIRED)
 find_package(boost_asio REQUIRED CONFIG)
+find_package(boost_locale REQUIRED CONFIG)
+find_package(simdutf REQUIRED CONFIG)
 find_package(fmt CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
@@ -61,6 +63,8 @@ target_link_libraries(whz-core PRIVATE
   CLI11::CLI11
   fmt::fmt
   ftxui::dom ftxui::screen ftxui::component
+  simdutf::simdutf
+  Boost::locale
 )
 
 if (BUILD_TESTING)

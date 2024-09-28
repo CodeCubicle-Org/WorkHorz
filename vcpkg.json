@@ -62,6 +62,17 @@
     {
       "name": "taskflow",
       "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
+      "name": "simdutf",
+      "platform": "(windows & x64) | (linux & x64)"
+    },
+    {
+      "name": "boost-locale",
+      "features": [
+      "icu"
+    ],
+      "platform": "(windows & x64) | (linux & x64)"
     }
   ]
 }
