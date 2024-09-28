@@ -7,6 +7,12 @@
 #include "whz_connection.hpp"
 #include "whz_io_context_pool.hpp"
 #include "whz_ssl_connection.hpp"
+#include "whz_quill_wrapper.hpp"
+
+#include "quill/LogMacros.h"
+#include "quill/Logger.h"
+
+extern quill::Logger* logger;
 
 namespace whz {
 
@@ -27,6 +33,8 @@ server::server(
 #if defined(SIGQUIT)
   signals_.add(SIGQUIT);
 #endif
+
+  LOG_INFO(logger, "WHZ Server is running");
 
   do_await_stop();
 }
