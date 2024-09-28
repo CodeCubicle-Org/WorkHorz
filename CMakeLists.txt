@@ -41,15 +41,12 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_LUA_core.cpp
                src/whz_LUA_api.cpp
                src/whz_renderer.cpp
-
+               src/templateCache.cpp
                src/whz_quill_wrapper.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
 
-=======
-               src/templateCache.cpp
-)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
 
