@@ -8,27 +8,62 @@
 
 #include "whz_quill_wrapper.hpp"
 #include "whz_server.hpp"
+#include "LocalizationManager.hpp"
 
-extern quill::Logger* logger;
+extern quill::Logger *logger;
 
-auto main(int argc, char** argv) -> int {
-  setup_quill();
+auto main(int argc, char **argv) -> int {
+    setup_quill();
 
-  CLI::App app {"WorkHorz server"};
-  argv = app.ensure_utf8(argv);
+    CLI::App app{"WorkHorz server"};
+    argv = app.ensure_utf8(argv);
 
-  std::string config_path;
-  [[maybe_unused]] CLI::Option *opt = app.add_option("-c, --config,config", config_path, "Path to WorkHorz config file");
+    std::string config_path;
+    [[maybe_unused]] CLI::Option *opt = app.add_option("-c, --config,config", config_path,
+                                                       "Path to WorkHorz config file");
 
-  CLI11_PARSE(app, argc, argv);
+    CLI11_PARSE(app, argc, argv);
 
-  if (config_path.empty()) {
-    LOG_INFO(logger, "Using default config");
-  }
+    if (config_path.empty()) {
+        LOG_INFO(logger, "Using default config");
+    }
 
-  LOG_INFO(logger, "Starting WHZ");
+    std::filesystem::path path{"/tmp/whz"};
 
-=======
+    // --------------------------------------------------------------------------------
+    /// Testing the localization manager & translations
+    // Initialize the localization manager
+    auto& locManager = LocalizationManager::getInstance();
+    locManager.addLocale("path/to/locale", "messages", "en_US");
+    locManager.addLocale("path/to/locale", "messages", "de_DE");
+
+    // Switch to English and translate a string
+    locManager.switchLocale("en_US");
+    std::string translated_en = locManager.translate("Hello, my World!");
+    std::cout << "UTF-8: " << translated_en << std::endl;
+    std::cout << "Latin1: " << locManager.toLatin1(translated_en) << std::endl;
+
+    // Switch to French and translate a string
+    locManager.switchLocale("de_DE");
+    std::string translated_de = locManager.translate("Hallo, meine Welt!");
+    std::cout << "UTF-8: " << translated_de << std::endl;
+    std::cout << "Latin1: " << locManager.toLatin1(translated_de) << std::endl;
+
+    // Convert back from Latin1 to UTF-8
+    std::string utf8_from_latin1 = locManager.toUtf8(locManager.toLatin1(translated_de));
+    std::cout << "UTF-8 from Latin1: " << utf8_from_latin1 << std::endl;
+
+    // Validate UTF-8 string
+    bool isValid = locManager.isValidUtf8(translated_de);
+    std::cout << "Is valid UTF-8: " << std::boolalpha << isValid << std::endl;
+    // --------------------------------------------------------------------------------
+
+    LOG_INFO(logger, "Starting WHZ");
+    whz::server s{"0.0.0.0", 8080, std::move(path), 1};
+
+    s.listen_and_serve();
+    return 0;
+}
 
 /**
  * \mainpage whz-core.cpp
@@ -38,49 +73,51 @@ auto main(int argc, char** argv) -> int {
  *
  * Main entrypoint for WorkHorz
  */
+/*
 auto main() -> int {
 
-  std::filesystem::path path{"/tmp/whz"};
+ std::filesystem::path path{"/tmp/whz"};
 
-  // SETUP Stage (low level C++)
-  // Initialise the base objects that are part of the core (not in the nodes)
-  // Load the configured system nodes dynamically and let them initialise themselves
-  // Load the configuration file and process it (e.g. validate paths and settings)
-  // Check the available resources (CPU, memory, disk space, etc.), adjust config if necessary
-  // Create the LUA context and check the existence of the LUA start-script, execute startup operations if needed
-  // Create the database object(s) and connect to the database(s), execute startup operations if needed
-  // Connect to the other whz-cores if configured
-  // Load the configured user nodes dynamically and let them initialise themselves
-  // Create the server object and start listening in the server
-  // Start the LUA start-script
+ // SETUP Stage (low level C++)
+ // Initialise the base objects that are part of the core (not in the nodes)
+ // Load the configured system nodes dynamically and let them initialise themselves
+ // Load the configuration file and process it (e.g. validate paths and settings)
+ // Check the available resources (CPU, memory, disk space, etc.), adjust config if necessary
+ // Create the LUA context and check the existence of the LUA start-script, execute startup operations if needed
+ // Create the database object(s) and connect to the database(s), execute startup operations if needed
+ // Connect to the other whz-cores if configured
+ // Load the configured user nodes dynamically and let them initialise themselves
+ // Create the server object and start listening in the server
+ // Start the LUA start-script
 
-  // SETUP Stage (high level C++ and LUA)
-  // Initialise user objects, attach dynamic nodes (user + system) and load the config
-  // Create the server object and start listening in the server
+ // SETUP Stage (high level C++ and LUA)
+ // Initialise user objects, attach dynamic nodes (user + system) and load the config
+ // Create the server object and start listening in the server
 
-  // --------------------------------------------------------------------------------
+ // --------------------------------------------------------------------------------
 
-  // REQUEST Processing Stage (low level C++)
-  // Pull the next requests from the io_uring buffer and assign reused contexts and threads/tasks to them, they are queued
-  // Execute as many requests as we have CPU cores configured and available, they are executed in parallel
-  // REQ: Parse the request (HTTP header) and validate it, check the caller permissions and the rate limits
-  // REQ: Validate any user input and request parameters and escape/sanitize them before further processing
-  // REQ: Create a user-session object and cache it if necessary.
-  // REQ: Find the page from the path and the query parameters, check the cache.
-  // REQ: Assemble the page and its resources.
-  // REQ: Parse the page template and process them + fill the data in it, render the page
-  // REQ: Construct HTTP header and serve the page data and resources requested
-  // Free the context and the thread/task
+ // REQUEST Processing Stage (low level C++)
+ // Pull the next requests from the io_uring buffer and assign reused contexts and threads/tasks to them, they are queued
+ // Execute as many requests as we have CPU cores configured and available, they are executed in parallel
+ // REQ: Parse the request (HTTP header) and validate it, check the caller permissions and the rate limits
+ // REQ: Validate any user input and request parameters and escape/sanitize them before further processing
+ // REQ: Create a user-session object and cache it if necessary.
+ // REQ: Find the page from the path and the query parameters, check the cache.
+ // REQ: Assemble the page and its resources.
+ // REQ: Parse the page template and process them + fill the data in it, render the page
+ // REQ: Construct HTTP header and serve the page data and resources requested
+ // Free the context and the thread/task
 
-  // REQUEST Processing Stage (high level C++ and LUA)
-  // REQ: Process request and receive the data of it
-  // REQ: Apply the business logic and assemble the page data
-  // REQ: Render the page and serve it
-  // REQ: Close request.
+ // REQUEST Processing Stage (high level C++ and LUA)
+ // REQ: Process request and receive the data of it
+ // REQ: Apply the business logic and assemble the page data
+ // REQ: Render the page and serve it
+ // REQ: Close request.
 
 
-  whz::server s{"0.0.0.0", 8080, std::move(path), 1};
+ whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
-  s.listen_and_serve();
-  return 0;
+ s.listen_and_serve();
+ return 0;
 }
+*/

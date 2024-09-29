@@ -43,6 +43,7 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_renderer.cpp
                src/templateCache.cpp
                src/whz_quill_wrapper.cpp
+               src/LocalizationManager.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
