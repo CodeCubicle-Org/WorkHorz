@@ -2,7 +2,7 @@
 // Created by patle on 26/09/2024.
 //
 
-#include "templateCache.h"
+#include "whz_templateCache.hpp"
 
 #include <cstring>
 #include <sys/mman.h>
@@ -11,7 +11,7 @@
 
 namespace whz {
 
-    void templateCache::memoryMapTemplates(const std::string &target_filePath) {
+    void whz_templateCache::memoryMapTemplates(const std::string &target_filePath) {
         int fd = open(target_filePath.c_str(), O_RDWR | O_CREAT, 0666);
         if (fd == -1) {
             std::cerr << "Failed to open file for memory mapping: " << target_filePath << std::endl;

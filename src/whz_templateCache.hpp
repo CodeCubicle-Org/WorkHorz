@@ -15,16 +15,16 @@ namespace whz {
      *  HTML code with placeholders that will be replaced by the data of the page. But can actually contain any kind of
      *  text content with placeholders. Mustache must be used to use the built-in template engine.
      */
-    class templateCache {
+    class whz_templateCache {
     public:
         // Delete copy constructor and assignment operator to prevent copying
-        templateCache(const templateCache &) = delete;
+        whz_templateCache(const whz_templateCache &) = delete;
 
-        templateCache &operator=(const templateCache &) = delete;
+        whz_templateCache &operator=(const whz_templateCache &) = delete;
 
         // Static method to get the single instance of the class
-        static templateCache &getInstance() {
-            static templateCache instance;
+        static whz_templateCache &getInstance() {
+            static whz_templateCache instance;
             return instance;
         }
 
@@ -73,7 +73,7 @@ namespace whz {
 
     private:
         // Private constructor to prevent instantiation
-        templateCache() = default;
+        whz_templateCache() = default;
 
         // Method to memory-map the whz_templates variable
         void memoryMapTemplates(const std::string &target_filePath);

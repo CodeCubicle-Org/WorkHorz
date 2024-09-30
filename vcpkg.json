@@ -5,74 +5,71 @@
       "features": [
         "ssl"
       ],
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "boost-url",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "catch2",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "cli11",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "fmt",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "ftxui",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "lua",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "nghttp2",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "openssl",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "pthreads",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "quill",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "rang",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "simdjson",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "sol2",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "taskflow",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "simdutf",
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     },
     {
       "name": "boost-locale",
-      "features": [
-      "icu"
-    ],
-      "platform": "(windows & x64) | (linux & x64)"
+      "platform": "(linux & x64)"
     }
   ]
 }

@@ -41,7 +41,7 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_LUA_core.cpp
                src/whz_LUA_api.cpp
                src/whz_renderer.cpp
-               src/templateCache.cpp
+               src/whz_templateCache.cpp
                src/whz_quill_wrapper.cpp
                src/LocalizationManager.cpp
 )
@@ -86,7 +86,7 @@ if (BUILD_TESTING)
   catch_discover_tests(sample_tests)
 endif ()
 
-set(BUILD_DOC OFF) # Disable Doxygen for now
+set(BUILD_DOC ON) # Disable Doxygen for now
 if (BUILD_DOC)
   find_package(Doxygen)
   if (DOXYGEN_FOUND)
