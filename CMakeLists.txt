@@ -22,6 +22,7 @@ find_package(sol2 CONFIG REQUIRED)
 find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
+find_package(unofficial-sodium CONFIG REQUIRED) # for libsodium
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -44,19 +45,21 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_templateCache.cpp
                src/whz_quill_wrapper.cpp
                src/LocalizationManager.cpp
+               src/whz_encryption.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
 
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h")
+find_path(RANG_INCLUDE_DIRS "rang.hpp")
+find_path(RAPIDHASH_INCLUDE_DIRS "rapidhash.h")
 
 target_include_directories(whz-core PRIVATE ${QUILL_INCLUDE_DIRS})
-
-find_path(RANG_INCLUDE_DIRS "rang.hpp")
 target_include_directories(whz-core PRIVATE ${RANG_INCLUDE_DIRS})
-
 target_include_directories(whz-core PRIVATE ${LUA_INCLUDE_DIRS})
+target_include_directories(whz-core PRIVATE ${RAPIDHASH_INCLUDE_DIRS})
+
 
 target_link_libraries(whz-core PRIVATE
   Boost::asio
@@ -73,6 +76,7 @@ target_link_libraries(whz-core PRIVATE
   ftxui::dom ftxui::screen ftxui::component
   simdutf::simdutf
   Boost::locale
+  unofficial-sodium::sodium
 )
 
 if (BUILD_TESTING)

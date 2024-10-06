@@ -9,6 +9,7 @@
 #include "whz_quill_wrapper.hpp"
 #include "whz_server.hpp"
 #include "LocalizationManager.hpp"
+#include "whz_encryption.hpp"
 
 extern quill::Logger *logger;
 
@@ -32,6 +33,7 @@ auto main(int argc, char **argv) -> int {
 
     // --------------------------------------------------------------------------------
     /// Testing the localization manager & translations
+    LOG_INFO(logger, "Testing Localization Manager");
     // Initialize the localization manager
     auto& locManager = LocalizationManager::getInstance();
     locManager.addLocale("path/to/locale", "messages", "en_US");
@@ -56,6 +58,47 @@ auto main(int argc, char **argv) -> int {
     // Validate UTF-8 string
     bool isValid = locManager.isValidUtf8(translated_de);
     std::cout << "Is valid UTF-8: " << std::boolalpha << isValid << std::endl;
+    // --------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------
+    /// Testing the encryption utilities
+    LOG_INFO(logger, "Test Encryption");
+    // Generate key pair
+    whz::whz_encryption secureUtils;
+    std::vector<unsigned char> publicKey, secretKey;
+    secureUtils.generateKeyPair(publicKey, secretKey);
+    std::cout << "Generated key pair." << std::endl;
+
+    // Validate key pair
+    bool key_valid = secureUtils.validateKeyPair(publicKey, secretKey);
+    std::cout << "Key validation: " << (key_valid ? "Valid" : "Invalid") << std::endl;
+
+    // Password hashing and verification
+    std::string password = "secure_password123";
+    std::string hashed_password = secureUtils.hashPassword(password);
+    std::cout << "Hashed Password: " << hashed_password << std::endl;
+    bool is_valid = secureUtils.verifyPassword(hashed_password, password);
+    std::cout << "Password verification: " << (is_valid ? "Valid" : "Invalid") << std::endl;
+
+    // CSRF Token creation
+    std::string csrf_token = secureUtils.createCSRFToken();
+    std::cout << "CSRF Token: " << csrf_token << std::endl;
+
+    // File encryption
+    // Note: Replace `publicKey` with an actual generated public key in production use
+    std::vector<unsigned char> publicKey2(crypto_box_PUBLICKEYBYTES);
+    randombytes_buf(publicKey2.data(), publicKey2.size());
+    secureUtils.encryptFile("example.txt", publicKey2);
+
+    // Signed message creation and verification
+    std::string message = "This is a secure message.";
+    std::vector<unsigned char> secretKey2(crypto_sign_SECRETKEYBYTES);
+    std::vector<unsigned char> pubKey(crypto_sign_PUBLICKEYBYTES);
+    crypto_sign_keypair(pubKey.data(), secretKey2.data());
+
+    std::vector<unsigned char> signed_message = secureUtils.createSignedMessage(message, secretKey2);
+    std::string verified_message = secureUtils.verifySignedMessage(signed_message, pubKey);
+    std::cout << "Verified Message: " << verified_message << std::endl;
     // --------------------------------------------------------------------------------
 
     LOG_INFO(logger, "Starting WHZ");
