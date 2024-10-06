@@ -15,8 +15,10 @@ public:
     }
 
     void addLocale(std::string_view localeDir, std::string_view domain, std::string_view language) {
-        std::lock_guard lock(mutex_);
         boost::locale::generator gen;
+
+        std::lock_guard lock(mutex_);
+
         gen.add_messages_path(std::string(localeDir));
         gen.add_messages_domain(std::string(domain));
         locales_.emplace(language, gen(std::string(language)));
