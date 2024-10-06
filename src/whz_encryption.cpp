@@ -103,7 +103,6 @@ namespace whz {
         std::vector<unsigned char> token(crypto_generichash_BYTES);
         randombytes_buf(token.data(), token.size());
         return std::string(token.begin(), token.end());
-
     }
 
 
