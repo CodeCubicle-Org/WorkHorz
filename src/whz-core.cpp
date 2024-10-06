@@ -9,6 +9,7 @@
 #include "whz_quill_wrapper.hpp"
 #include "whz_server.hpp"
 #include "LocalizationManager.hpp"
+#include "whz_encryption.hpp"
 
 extern quill::Logger *logger;
 
@@ -32,6 +33,7 @@ auto main(int argc, char **argv) -> int {
 
     // --------------------------------------------------------------------------------
     /// Testing the localization manager & translations
+    LOG_INFO(logger, "Testing Localization Manager");
     // Initialize the localization manager
     auto& locManager = LocalizationManager::getInstance();
     locManager.addLocale("path/to/locale", "messages", "en_US");
@@ -41,22 +43,65 @@ auto main(int argc, char **argv) -> int {
     locManager.switchLocale("en_US");
     std::string translated_en = locManager.translate("Hello, my World!");
     std::cout << "UTF-8: " << translated_en << std::endl;
-    std::cout << "Latin1: " << locManager.toLatin1(translated_en) << std::endl;
+    std::cout << "Latin1: " << locManager.toLatin1(translated_en) << "\n";
 
     // Switch to French and translate a string
     locManager.switchLocale("de_DE");
     std::string translated_de = locManager.translate("Hallo, meine Welt!");
     std::cout << "UTF-8: " << translated_de << std::endl;
-    std::cout << "Latin1: " << locManager.toLatin1(translated_de) << std::endl;
+    std::cout << "Latin1: " << locManager.toLatin1(translated_de) << "\n";
 
     // Convert back from Latin1 to UTF-8
     std::string utf8_from_latin1 = locManager.toUtf8(locManager.toLatin1(translated_de));
-    std::cout << "UTF-8 from Latin1: " << utf8_from_latin1 << std::endl;
+    std::cout << "UTF-8 from Latin1: " << utf8_from_latin1 << "\n";
 
     // Validate UTF-8 string
     bool isValid = locManager.isValidUtf8(translated_de);
-    std::cout << "Is valid UTF-8: " << std::boolalpha << isValid << std::endl;
+    std::cout << "Is valid UTF-8: " << std::boolalpha << isValid << "\n";
     // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+
+    // --------------------------------------------------------------------------------
+    /// Testing the encryption utilities
+    LOG_INFO(logger, "Test Encryption");
+    // Generate key pair
+    whz::whz_encryption secureUtils;
+    std::vector<unsigned char> publicKey, secretKey;
+    secureUtils.generateKeyPair(publicKey, secretKey);
+    std::cout << "Generated key pair." << "\n";
+
+    // Validate key pair
+    bool key_valid = secureUtils.validateKeyPair(publicKey, secretKey);
+    std::cout << "Key validation: " << (key_valid ? "Valid" : "Invalid") << "\n";
+
+    // Password hashing and verification
+    std::string password = "secure_password123";
+    std::string hashed_password = secureUtils.hashPassword(password);
+    std::cout << "Hashed Password: " << hashed_password << "\n";
+    bool is_valid = secureUtils.verifyPassword(hashed_password, password);
+    std::cout << "Password verification: " << (is_valid ? "Valid" : "Invalid") << "\n";
+
+    // CSRF Token creation
+    std::string csrf_token = secureUtils.createCSRFToken();
+    std::cout << "CSRF Token: " << std::hex << csrf_token << "\n";
+
+    // File encryption
+    // Note: Replace `publicKey` with an actual generated public key in production use
+    std::vector<unsigned char> publicKey2(crypto_box_PUBLICKEYBYTES);
+    randombytes_buf(publicKey2.data(), publicKey2.size());
+    secureUtils.encryptFile("example.txt", publicKey2);
+
+    // Signed message creation and verification
+    std::string message = "This is a secure message.";
+    std::vector<unsigned char> secretKey2(crypto_sign_SECRETKEYBYTES);
+    std::vector<unsigned char> pubKey(crypto_sign_PUBLICKEYBYTES);
+    crypto_sign_keypair(pubKey.data(), secretKey2.data());
+
+    std::vector<unsigned char> signed_message = secureUtils.createSignedMessage(message, secretKey2);
+    std::string verified_message = secureUtils.verifySignedMessage(signed_message, pubKey);
+    std::cout << "Verified Message: " << verified_message << "\n";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
 
     LOG_INFO(logger, "Starting WHZ");
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};

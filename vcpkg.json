@@ -70,6 +70,14 @@
     {
       "name": "boost-locale",
       "platform": "(linux & x64)"
+    },
+    {
+      "name": "libsodium",
+      "platform": "(linux & x64)"
+    },
+    {
+      "name": "rapidhash",
+      "platform": "(linux & x64)"
     }
   ]
 }
