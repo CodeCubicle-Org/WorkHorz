@@ -5,6 +5,7 @@
 #include "quill/LogMacros.h"
 #include "quill/Logger.h"
 #include "CLI/CLI.hpp"
+#include <bustache/render/ostream.hpp>
 
 #include "whz_quill_wrapper.hpp"
 #include "whz_server.hpp"
@@ -104,6 +105,10 @@ auto main(int argc, char **argv) -> int {
     std::cout << std::endl;
 
     LOG_INFO(logger, "Starting WHZ");
+    LOG_INFO(logger, "Test bustache...");
+    bustache::format format{"{{mustache}} templating"};
+    std::unordered_map<std::string, std::string> data{{"mustache", "bustache"}};
+    std::cout << format(data) << '\n';
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
     s.listen_and_serve();

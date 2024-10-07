@@ -26,6 +26,8 @@ find_package(unofficial-sodium CONFIG REQUIRED) # for libsodium
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
 
+add_subdirectory(external/bustache)
+
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp
                src/whz_connection.cpp
@@ -77,6 +79,7 @@ target_link_libraries(whz-core PRIVATE
   simdutf::simdutf
   Boost::locale
   unofficial-sodium::sodium
+  bustache::bustache
 )
 
 if (BUILD_TESTING)
@@ -90,7 +93,6 @@ if (BUILD_TESTING)
   catch_discover_tests(sample_tests)
 endif ()
 
-set(BUILD_DOC ON) # Disable Doxygen for now
 if (BUILD_DOC)
   find_package(Doxygen)
   if (DOXYGEN_FOUND)
