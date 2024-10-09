@@ -38,3 +38,4 @@
 /${Home}/build/linux-release
 /cmake-build-debug
 .idea/
+package-lock.json

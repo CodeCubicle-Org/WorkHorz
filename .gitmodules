@@ -1,0 +1,3 @@
+[submodule "external/bustache"]
+	path = external/bustache
+	url = git@github.com:jamboree/bustache.git
