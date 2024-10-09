@@ -7,6 +7,7 @@
 #include "whz_common.hpp"
 #include "whz_request_handler.hpp"
 #include "whz_request_parser.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 

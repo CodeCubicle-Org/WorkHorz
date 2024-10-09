@@ -26,8 +26,10 @@ bool resources::loadResource(const std::string& sfilepath) {
   bFileExists = this->checkResourceFileExists(this->_resourcePath);
   if (bFileExists) {
     std::ifstream ifs(sfilepath, std::ios::in); // Open the file for reading
-    if (!ifs.is_open())
-      std::cout << "ERROR: Failed to open the file" << sfilepath << '\n';
+    if (!ifs.is_open()) {
+        this->_qlogger.error(fmt::format("Failed to open the file {}", sfilepath));
+        //std::cout << "ERROR: Failed to open the file" << sfilepath << '\n';
+    }
     else {
       if (_resourceType == resource_type::IMAGE_PNG ||
           _resourceType == resource_type::IMAGE_JPG) {
@@ -172,8 +174,8 @@ bool resources::checkResourceFileExists(std::filesystem::path fpath) {
       _resourceType = resource_type::IMAGE_JPG;
     } else {
       _resourceType = resource_type::UNKNOWN;
-      std::cout << "ERROR: Failed to open the file" << fpath
-                << ", file extension is unknown/unsupported.\n";
+      this->_qlogger.error(fmt::format("Failed to open the file {}, file extension is unknown/unsupported.", fpath.string()));
+      //std::cout << "ERROR: Failed to open the file" << fpath << ", file extension is unknown/unsupported.\n";
     }
   }
   return bRet;
@@ -182,4 +184,8 @@ bool resources::checkResourceFileExists(std::filesystem::path fpath) {
 std::optional<resource_type> resources::getResourceType() {
   return this->_resourceType;
 }
+
+    bool resources::resourceisFile() {
+        return is_regular_file(this->_resourcePath);
+    }
 } // namespace WHZ

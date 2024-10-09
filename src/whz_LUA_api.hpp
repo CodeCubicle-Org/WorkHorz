@@ -4,6 +4,7 @@
 #pragma once
 
 //#include "whz_LUA_core.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 

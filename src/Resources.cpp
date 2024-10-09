@@ -25,8 +25,10 @@ namespace WHZ {
         if (bFileExists)
         {
             std::ifstream ifs(sfilepath, std::ios::in); // Open the file for reading
-            if (!ifs.is_open())
-                std::cout << "ERROR: Failed to open the file" << sfilepath << '\n';
+            if (!ifs.is_open()) {
+                LOG_ERROR("Resources ERROR: Failed to open the file" << sfilepath);
+                std::cout << "Resources ERROR: Failed to open the file" << sfilepath << '\n';
+            }
             else
             {
                 if (_resourceType == ResourceType::IMAGE_PNG || _resourceType == ResourceType::IMAGE_JPG)
@@ -167,6 +169,7 @@ namespace WHZ {
                 _resourceType = ResourceType::IMAGE_JPG;
             } else {
                 _resourceType = ResourceType::UNKNOWN;
+                LOG_ERROR("ERROR: Failed to open the file" << fpath << ", file extension is unknown/unsupported.");
                 std::cout << "ERROR: Failed to open the file" << fpath << ", file extension is unknown/unsupported.\n";
             }
         }

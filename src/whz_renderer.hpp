@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "whz_http_routing.hpp"
+#include "whz_quill_wrapper.hpp"
 
 
 namespace whz {

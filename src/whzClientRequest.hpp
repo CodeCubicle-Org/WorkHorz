@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "whz_quill_wrapper.hpp"
 
 namespace WHZ {
 

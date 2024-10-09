@@ -9,6 +9,7 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
     /** Singleton class to cache the content of the templates files with the extension ".whzt". Those files can contain
@@ -42,6 +43,8 @@ namespace whz {
                         std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
                         whz_templates.emplace(entry.path().string(), content);
                     } else {
+                        this->_qlogger.error(fmt::format("Failed to open template file: {}", entry.path().string()));
+                        //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to open template file: {}", entry.path().string());
                         std::cerr << "Failed to open template file: " << entry.path() << std::endl;
                     }
                 }
@@ -79,5 +82,6 @@ namespace whz {
         void memoryMapTemplates(const std::string &target_filePath);
 
         std::unordered_multimap<std::string, std::string> whz_templates;
+        whz::whz_qlogger _qlogger;
     };
 } // namespace whz

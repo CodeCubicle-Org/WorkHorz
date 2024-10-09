@@ -9,14 +9,15 @@
 #include <string>
 #include <optional>
 #include <filesystem>
-#include "fmt/core.h"
+//#include "fmt/core.h"
 //#include "tree.hh"
 //#include "tree_util.hh"
 // Adding the URL parser library
 #include <boost/url.hpp>
+#include "whz_quill_wrapper.hpp"
 
 
-namespace WHZ {
+namespace whz {
 
 using  MMPathlist = std::unordered_multimap<std::string, std::string>;
 
@@ -47,6 +48,7 @@ protected:
 private:
   std::string _basedomain;
   MMPathlist _page_pathResources;   /// Contains the page/file names and the relative filepath they reside in
+  whz::whz_qlogger _qlogger;
 };
 
 } // namespace WHZ

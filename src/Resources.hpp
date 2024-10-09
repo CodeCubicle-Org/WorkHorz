@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <optional>
 #include <string>
+#include "whz_quill_wrapper.hpp"
 #include "ResourceType.hpp"
 
 namespace WHZ {

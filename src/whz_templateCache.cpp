@@ -3,7 +3,7 @@
 //
 
 #include "whz_templateCache.hpp"
-
+#include "whz_quill_wrapper.hpp"
 #include <cstring>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -14,6 +14,8 @@ namespace whz {
     void whz_templateCache::memoryMapTemplates(const std::string &target_filePath) {
         int fd = open(target_filePath.c_str(), O_RDWR | O_CREAT, 0666);
         if (fd == -1) {
+            this->_qlogger.error(fmt::format("Failed to open file for memory mapping: {}", target_filePath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to open file for memory mapping: {}", target_filePath);
             std::cerr << "Failed to open file for memory mapping: " << target_filePath << std::endl;
             return;
         }
@@ -24,6 +26,8 @@ namespace whz {
         }
 
         if (ftruncate(fd, size) == -1) {
+            this->_qlogger.error(fmt::format("Failed to set the size of the file: {}", target_filePath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to set the size of the file: {}", target_filePath);
             std::cerr << "Failed to set the size of the file: " << target_filePath << std::endl;
             close(fd);
             return;
@@ -31,6 +35,8 @@ namespace whz {
 
         void *map = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
         if (map == MAP_FAILED) {
+            this->_qlogger.error(fmt::format("Failed to memory-map the file: {}", target_filePath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to memory-map the file: {}", target_filePath);
             std::cerr << "Failed to memory-map the file: " << target_filePath << std::endl;
             close(fd);
             return;
@@ -45,10 +51,14 @@ namespace whz {
         }
 
         if (msync(map, size, MS_SYNC) == -1) {
+            this->_qlogger.error(fmt::format("Failed to sync the memory-mapped file: {}", target_filePath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to sync the memory-mapped file: {}", target_filePath);
             std::cerr << "Failed to sync the memory-mapped file: " << target_filePath << std::endl;
         }
 
         if (munmap(map, size) == -1) {
+            this->_qlogger.error(fmt::format("Failed to unmap the memory-mapped file: {}", target_filePath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Failed to unmap the memory-mapped file: {}", target_filePath);
             std::cerr << "Failed to unmap the memory-mapped file: " << target_filePath << std::endl;
         }
 

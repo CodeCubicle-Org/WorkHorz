@@ -3,7 +3,7 @@
 #include <optional>
 
 #include "quill/LogMacros.h"
-#include "quill/Logger.h"
+//#include "quill/logger.h"
 #include "CLI/CLI.hpp"
 
 #include "whz_quill_wrapper.hpp"
@@ -11,13 +11,15 @@
 #include "LocalizationManager.hpp"
 #include "whz_encryption.hpp"
 
-extern quill::Logger *logger;
+//extern quill::Logger *whz_qlogger::getInstance().getLogger();
+using namespace whz;
 
 auto main(int argc, char **argv) -> int {
-    setup_quill();
+    //setup_quill();
 
     CLI::App app{"WorkHorz server"};
     argv = app.ensure_utf8(argv);
+    whz::whz_qlogger qlogger;
 
     std::string config_path;
     [[maybe_unused]] CLI::Option *opt = app.add_option("-c, --config,config", config_path,
@@ -26,14 +28,16 @@ auto main(int argc, char **argv) -> int {
     CLI11_PARSE(app, argc, argv);
 
     if (config_path.empty()) {
-        LOG_INFO(logger, "Using default config");
+        qlogger.info("Using default config");
+        //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Using default config");
     }
 
     std::filesystem::path path{"/tmp/whz"};
 
     // --------------------------------------------------------------------------------
     /// Testing the localization manager & translations
-    LOG_INFO(logger, "Testing Localization Manager");
+    qlogger.info("Testing Localization Manager");
+    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Testing Localization Manager");
     // Initialize the localization manager
     auto& locManager = LocalizationManager::getInstance();
     locManager.addLocale("path/to/locale", "messages", "en_US");
@@ -63,7 +67,8 @@ auto main(int argc, char **argv) -> int {
 
     // --------------------------------------------------------------------------------
     /// Testing the encryption utilities
-    LOG_INFO(logger, "Test Encryption");
+    qlogger.info("Test Encryption");
+    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Test Encryption");
     // Generate key pair
     whz::whz_encryption secureUtils;
     std::vector<unsigned char> publicKey, secretKey;
@@ -103,7 +108,8 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
 
-    LOG_INFO(logger, "Starting WHZ");
+    qlogger.info("Starting WHZ");
+    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Starting WHZ");
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
     s.listen_and_serve();

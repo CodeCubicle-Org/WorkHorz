@@ -10,6 +10,7 @@
 
 #include "whz_io_context_pool.hpp"
 #include "whz_request_handler.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 
@@ -68,6 +69,7 @@ class server {
   // std::chrono::milliseconds tls_handshake_timeout_;
   // std::chrono::milliseconds read_timeout_;
   whz::request_handler request_handler_;
+  whz::whz_qlogger _qlogger;
 };
 
 }; // namespace whz

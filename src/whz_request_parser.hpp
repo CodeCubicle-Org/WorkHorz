@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include "whz_common.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 

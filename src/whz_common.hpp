@@ -5,6 +5,7 @@
 #include <vector>
 #include <boost/asio.hpp>
 #include <boost/asio/buffer.hpp>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 struct header {

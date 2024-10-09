@@ -24,7 +24,7 @@ find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED) # for libsodium
 
-find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/Logger.h" "quill/sinks/ConsoleSink.h")
+find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/whz_logger.h" "quill/sinks/ConsoleSink.h")
 
 add_executable(whz-core src/whz-core.cpp
                src/whz_common.cpp

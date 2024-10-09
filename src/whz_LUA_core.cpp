@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include "whz_LUA_core.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
     bool whz_LUA_core::init_LUA(const std::string& startup_script_path) {
@@ -23,11 +24,14 @@ namespace whz {
         bool bRet = false;
         // check if file exists in the filesystem startup_script_path
         if (!std::filesystem::exists(startup_script_path)) {
+            this->_whz_qlogger.error(fmt::format("Error initializing LUA: Startup script not found: {}", startup_script_path.string()));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Error initializing LUA: Startup script not found: {}", startup_script_path);
             std::cerr << "Error initializing LUA: Startup script not found: " << startup_script_path << std::endl;
             return bRet;
         }
         // check if the file has the extension .LUA
         if (startup_script_path.extension() != ".lua") {
+            this->_whz_qlogger.error(fmt::format("Error initializing LUA: Startup script is not a LUA script: {}", startup_script_path.string()));
             std::cerr << "Error initializing LUA: Startup script is not a LUA script: " << startup_script_path << std::endl;
             return bRet;
         }
@@ -37,6 +41,8 @@ namespace whz {
         try {
             std::ifstream ifs(startup_script_path);
             if (!ifs.is_open()) {
+                this->_whz_qlogger.error(fmt::format("Error initializing LUA: Could not open startup script: {}", startup_script_path.string()));
+                //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Error initializing LUA: Could not open startup script: {}", startup_script_path);
                 std::cerr << "Error initializing LUA: Could not open startup script: " << startup_script_path
                           << std::endl;
                 return bRet;
@@ -45,6 +51,8 @@ namespace whz {
                                                             std::istreambuf_iterator<char>());
             ifs.close();
         } catch (const std::exception& e) {
+            this->_whz_qlogger.error(fmt::format("Error initializing LUA: Could not read startup script: {}", e.what()));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Error initializing LUA: Could not read startup script: {}", e.what());
             std::cerr << "Error initializing LUA: Could not read startup script: " << e.what() << std::endl;
             return bRet;
         }
@@ -66,6 +74,8 @@ namespace whz {
         bool bRet = false;
 
         if (this->_startup_script_path.empty()) {
+            this->_whz_qlogger.error(fmt::format("Error running LUA startup script: No startup script defined."));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Error running LUA startup script: No startup script defined.");
             std::cerr << "Error running LUA startup script: No startup script defined." << std::endl;
             return bRet;
         }
@@ -74,6 +84,8 @@ namespace whz {
             // Set the LUA GC mode
             this->_lua01.supports_gc_mode(sol::gc_mode::incremental);
 
+            this->_whz_qlogger.error(fmt::format("Test if LUA GC is turned on: : {}", this->_lua01.is_gc_on()));
+            //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Test if LUA GC is turned on: : {}", this->_lua01.is_gc_on());
             std::cout << "Test if LUA GC is turned on: " << this->_lua01.is_gc_on() << std::endl; // Check if GC is on
 
             //this->_lua01.open_libraries(sol::lib::base, sol::lib::package, sol::lib::coroutine, sol::lib::string, sol::lib::os, sol::lib::math, sol::lib::table, sol::lib::debug, sol::lib::bit32, sol::lib::io, sol::lib::ffi, sol::lib::jit);
@@ -82,6 +94,8 @@ namespace whz {
             this->_lua01.script(this->_startup_script_content_str);
             bRet = true;
         } catch (const std::exception& e) {
+            this->_whz_qlogger.error(fmt::format("Error running the LUA startup script ({}): {}", this->_startup_script_path.string(), e.what()));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Error running the LUA startup script ({}): {}", this->_startup_script_path, e.what());
             std::cerr << "Error running the LUA startup script (" << this->_startup_script_path << "): " << e.what() << std::endl;
         }
         // Run the GC right now to clean up the LUA memory

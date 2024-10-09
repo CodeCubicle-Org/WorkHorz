@@ -9,10 +9,6 @@
 #include "whz_ssl_connection.hpp"
 #include "whz_quill_wrapper.hpp"
 
-#include "quill/LogMacros.h"
-#include "quill/Logger.h"
-
-extern quill::Logger* logger;
 
 namespace whz {
 
@@ -34,7 +30,8 @@ server::server(
   signals_.add(SIGQUIT);
 #endif
 
-  LOG_INFO(logger, "WHZ Server is running");
+  this->_qlogger.info("WHZ Server is running");
+  //LOG_INFO(whz_qlogger::getInstance().getLogger(), "WHZ Server is running");
 
   do_await_stop();
 }

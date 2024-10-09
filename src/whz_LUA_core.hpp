@@ -8,6 +8,7 @@
 #include <filesystem>
 #include "whz_config.hpp"
 #include "whz_LUA_api.hpp"
+#include "whz_quill_wrapper.hpp"
 
 // Some LUA Libs that are built-in and can be added as needed, the rest needs to be included manually in LUA.:
 //    base, package, coroutine, string, os, math, table, debug, bit32, io, ffi, jit
@@ -41,7 +42,7 @@ namespace whz {
         std::string _startup_script_content_str;
         whz::whz_LUA_api _whz_LUA_user_api;
         whz::Config& _whz_config;
-
+        whz::whz_qlogger _whz_qlogger;
     };
 
 } // whz

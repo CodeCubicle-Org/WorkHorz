@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 

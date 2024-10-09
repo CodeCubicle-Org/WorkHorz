@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 

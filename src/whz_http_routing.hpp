@@ -14,6 +14,7 @@
 //#include "tree_util.hh"
 // Adding the URL parser library
 #include <boost/url.hpp>
+#include "whz_quill_wrapper.hpp"
 
 
 namespace whz {

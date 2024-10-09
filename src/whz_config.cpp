@@ -3,6 +3,7 @@
 //
 
 #include "whz_config.hpp"
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 
@@ -23,7 +24,9 @@ namespace whz {
             simdjson::dom::element doc;
             simdjson::error_code error = parser.load(sfilepath).get(doc);
             if (error) {
-                std::cerr << "Error: " << error << std::endl;
+                this->_qlogger.error(fmt::format("Config Error: {}", static_cast<int>(error)));
+                //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Config Error: {}", error);
+                std::cerr << "Config Error: " << error << std::endl;
             } else {
                 std::string key = "";
 
@@ -158,7 +161,9 @@ namespace whz {
             }
         } else {
             // File does not exist
-            std::cerr << "Error: File " << sfilepath << " does not exist." << std::endl;
+            this->_qlogger.error(fmt::format("Config Error: File {} does not exist.", sfilepath));
+            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Config Error: File {} does not exist.", sfilepath);
+            std::cerr << "Config Error: File " << sfilepath << " does not exist." << std::endl;
         }
         return bRet;
     }

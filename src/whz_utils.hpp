@@ -8,6 +8,7 @@
 
 #include <boost/asio/ssl.hpp>
 #include <openssl/ssl.h>
+#include "whz_quill_wrapper.hpp"
 
 [[maybe_unused]] static auto url_decode(const std::string& url) -> std::optional<std::string> {
   std::string result{};

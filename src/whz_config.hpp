@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <cstdint>
 #include <any>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 
@@ -70,6 +71,7 @@ namespace whz {
         Config& operator=(Config const&) = delete;
         Config(Config&&) = delete;
         Config& operator=(Config&&) = delete;
+        whz::whz_qlogger _qlogger;
 
         bool m_bConfigLoaded = false;
         std::string config_filepath;
