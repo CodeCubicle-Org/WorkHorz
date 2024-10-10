@@ -23,6 +23,8 @@ find_package(Taskflow CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED) # for libsodium
+find_package(libzip CONFIG REQUIRED)
+find_package(liblzma CONFIG REQUIRED)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/whz_logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -48,6 +50,8 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_quill_wrapper.cpp
                src/LocalizationManager.cpp
                src/whz_encryption.cpp
+               src/whz_template_parser.cpp
+               src/whz_datacompression.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
@@ -80,6 +84,8 @@ target_link_libraries(whz-core PRIVATE
   Boost::locale
   unofficial-sodium::sodium
   bustache::bustache
+  libzip::zip
+  liblzma::liblzma
 )
 
 if (BUILD_TESTING)

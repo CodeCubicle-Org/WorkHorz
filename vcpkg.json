@@ -78,6 +78,14 @@
     {
       "name": "rapidhash",
       "platform": "(linux & x64)"
+    },
+    {
+      "name": "libzip",
+      "platform": "(linux & x64)"
+    },
+    {
+      "name": "liblzma",
+      "platform": "(linux & x64)"
     }
   ]
 }
