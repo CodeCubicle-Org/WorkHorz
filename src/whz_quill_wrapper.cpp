@@ -5,6 +5,7 @@
 #include "quill/logger.h"
 //#include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/RotatingFileSink.h"
+#include "quill/backend/PatternFormatter.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
 #include "fmt/std.h"
@@ -17,6 +18,7 @@ namespace whz {
         quill::BackendOptions backend_options;
         quill::Backend::start(backend_options);
 
+
         std::shared_ptr<quill::Sink> rotating_file_sink_a =
                 quill::Frontend::create_or_get_sink<quill::RotatingFileSink>("whz_logfile.log",
                                                      []() {
@@ -26,11 +28,15 @@ namespace whz {
                                                          rfh_cfg.set_rotation_max_file_size(1024 * 1024 * 5);
                                                          rfh_cfg.set_remove_old_files(false);
                                                          rfh_cfg.set_timezone(quill::Timezone::LocalTime);
+                                                         rfh_cfg.set_rotation_naming_scheme(quill::RotatingFileSinkConfig::RotationNamingScheme::DateAndTime);
                                                          return rfh_cfg;
                                                      }());
 
-        // Get the same instance back - we search it again (for testing only)
-        this->qlogger = quill::Frontend::create_or_get_logger("logger_user", std::move(rotating_file_sink_a));
+        // Create a logger with the rotating file sink and format the output properly
+        this->qlogger = quill::Frontend::create_or_get_logger("logger_user", std::move(rotating_file_sink_a),
+                                                              "%(time) [%(thread_id)] %(short_source_location:<28) "
+                                                              "%(log_level:<9) %(logger:<12) %(message)",
+                                                              "%H:%M:%S.%Qus");
     }
 
     whz_qlogger::~whz_qlogger() {

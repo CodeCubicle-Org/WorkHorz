@@ -108,18 +108,18 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     /// Testing the file compression utilities
     qlogger.info("Test File Compression");
-    whz::whz_datacompression handler;
+    whz::whz_datacompression dchandler;
     std::vector<fs::path> files = {"example1.txt", "example2.txt"};
-    handler.compress(files, "zipped_output.zip", ".zip");
-    handler.compress(files, "7zipped_output.7z", ".7z");
-    handler.decompress("zipped_output.zip", "zip_output_dir");
-    handler.decompress("7zipped_output.zip", "7z_output_dir");
+    dchandler.compress(files, "zipped_output.zip", ".zip");
+    dchandler.compress(files, "7zipped_output.7z", ".7z");
+    dchandler.decompress("zipped_output.zip", "zip_output_dir");
+    dchandler.decompress("7zipped_output.zip", "7z_output_dir");
 
     // Compress and decompress a directory recursively
-    handler.compressDirectory("compress_example_dir", "zipped_output_dir.zip", ".zip");
-    handler.compressDirectory("compress_example_dir", "7zipped_output_dir.7z", ".7z");
-    handler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
-    handler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
+    dchandler.compressDirectory("compress_example_dir", "zipped_output_dir.zip", ".zip");
+    dchandler.compressDirectory("compress_example_dir", "7zipped_output_dir.7z", ".7z");
+    dchandler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
+    dchandler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
     // --------------------------------------------------------------------------------
 
     std::cout << std::endl;

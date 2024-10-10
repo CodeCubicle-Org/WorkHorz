@@ -11,6 +11,7 @@
 #include <fstream>
 #include <zip.h>
 #include <lzma.h>
+#include "whz_quill_wrapper.hpp"
 
 namespace whz {
 
@@ -21,46 +22,78 @@ namespace whz {
         whz_datacompression() = default;
         ~whz_datacompression() = default;
 
-        void compress(const std::vector<fs::path>& files, const fs::path& output, const std::string& format) {
+        bool compress(const std::vector<fs::path>& files, const fs::path& output, const std::string& format) {
+            bool bRet = false;
+
+            // check if the path exists
+            if (!fs::exists(output.parent_path())) {
+                this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", output.parent_path().string()));
+                //throw std::runtime_error("Output directory does not exist");
+                return false;
+            }
+
             if (format == ".zip") {
-                compressZip(files, output);
+                bRet = compressZip(files, output);
             } else if (format == ".7z") {
-                compress7z(files, output);
+                bRet = compress7z(files, output);
             } else {
-                throw std::runtime_error("Unsupported format");
+                this->qlogger.error("Compression Error: Unsupported file format. Use only .zip or .7z");
+                return false;
             }
+            return bRet;
         }
 
-        void decompress(const fs::path& archive, const fs::path& outputDir) {
+        bool decompress(const fs::path& archive, const fs::path& outputDir) {
+            bool bRet = false;
+
+            // check if the path exists
+            if (!fs::exists(outputDir.parent_path())) {
+                this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", outputDir.parent_path().string()));
+                return false;
+            }
+
             if (archive.extension() == ".zip") {
-                decompressZip(archive, outputDir);
+                bRet = decompressZip(archive, outputDir);
             } else if (archive.extension() == ".7z") {
-                decompress7z(archive, outputDir);
+                bRet = decompress7z(archive, outputDir);
             } else {
-                throw std::runtime_error("Unsupported format");
+                this->qlogger.error("Compression Error: Unsupported file format. Use only .zip or .7z");
+                return false;
             }
+            return bRet;
         }
 
-        void compressDirectory(const fs::path& directory, const fs::path& output, const std::string& format) {
+        bool compressDirectory(const fs::path& directory, const fs::path& output, const std::string& format) {
+            // Check if the directory and output paths exist
+            if (!fs::exists(directory)) {
+                this->qlogger.error(fmt::format("Compression Error: Directory does not exist: {}", directory.string()));
+                return false;
+            }
+            if (!fs::exists(output.parent_path())) {
+                this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", output.parent_path().string()));
+                return false;
+            }
+
             std::vector<fs::path> files;
             for (const auto& entry : fs::recursive_directory_iterator(directory)) {
                 if (fs::is_regular_file(entry)) {
                     files.push_back(entry.path());
                 }
             }
-            compress(files, output, format);
+            return compress(files, output, format);
         }
 
-        void decompressToDirectory(const fs::path& archive, const fs::path& outputDir) {
-            decompress(archive, outputDir);
+        bool decompressToDirectory(const fs::path& archive, const fs::path& outputDir) {
+            return decompress(archive, outputDir);
         }
 
     private:
-        void compressZip(const std::vector<fs::path>& files, const fs::path& output) {
+        bool compressZip(const std::vector<fs::path>& files, const fs::path& output) {
             int error;
             zip_t* archive = zip_open(output.string().c_str(), ZIP_CREATE | ZIP_TRUNCATE, &error);
             if (!archive) {
-                throw std::runtime_error("Failed to create ZIP archive");
+                this->qlogger.error(fmt::format("Compression Error({}): Failed to create ZIP archive", error));
+                return false;
             }
 
             for (const auto& file : files) {
@@ -69,18 +102,21 @@ namespace whz {
                     if (source == nullptr || zip_file_add(archive, file.filename().string().c_str(), source, ZIP_FL_OVERWRITE) < 0) {
                         zip_source_free(source);
                         zip_close(archive);
-                        throw std::runtime_error("Failed to add file to ZIP archive");
+                        this->qlogger.error("Compression Error: Failed to add file to ZIP archive");
+                        return false;
                     }
                 }
             }
             zip_close(archive);
+            return true;
         }
 
-        void decompressZip(const fs::path& archive, const fs::path& outputDir) {
+        bool decompressZip(const fs::path& archive, const fs::path& outputDir) {
             int error;
             zip_t* za = zip_open(archive.string().c_str(), 0, &error);
             if (!za) {
-                throw std::runtime_error("Failed to open ZIP archive");
+                this->qlogger.error(fmt::format("Decompression Error({}): Failed to open ZIP archive", error));
+                return false;
             }
 
             zip_int64_t numEntries = zip_get_num_entries(za, 0);
@@ -91,7 +127,8 @@ namespace whz {
                 zip_file_t* zf = zip_fopen_index(za, i, 0);
                 if (!zf) {
                     zip_close(za);
-                    throw std::runtime_error("Failed to open file inside ZIP archive");
+                    this->qlogger.error("Decompression Error: Failed to open file inside ZIP archive");
+                    return false;
                 }
 
                 fs::path outFilePath = outputDir / st.name;
@@ -106,18 +143,21 @@ namespace whz {
                 zip_fclose(zf);
             }
             zip_close(za);
+            return true;
         }
 
-        void compress7z(const std::vector<fs::path>& files, const fs::path& output) {
+        bool compress7z(const std::vector<fs::path>& files, const fs::path& output) {
             lzma_stream strm = LZMA_STREAM_INIT;
             if (lzma_easy_encoder(&strm, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC64) != LZMA_OK) {
-                throw std::runtime_error("Failed to initialize LZMA encoder");
+                this->qlogger.error("Compression Error: Failed to initialize LZMA encoder");
+                return false;
             }
 
             std::ofstream ofs(output, std::ios::binary);
             if (!ofs) {
                 lzma_end(&strm);
-                throw std::runtime_error("Failed to open output file");
+                this->qlogger.error(fmt::format("Compression Error: Failed to open output file: {}", output.string()));
+                return false;
             }
 
             for (const auto& file : files) {
@@ -125,7 +165,8 @@ namespace whz {
                     std::ifstream ifs(file, std::ios::binary);
                     if (!ifs) {
                         lzma_end(&strm);
-                        throw std::runtime_error("Failed to open input file");
+                        this->qlogger.error("Compression Error: Failed to open input file");
+                        return false;
                     }
 
                     char buffer[8192];
@@ -141,7 +182,8 @@ namespace whz {
                             lzma_ret ret = lzma_code(&strm, LZMA_RUN);
                             if (ret != LZMA_OK && ret != LZMA_STREAM_END) {
                                 lzma_end(&strm);
-                                throw std::runtime_error("LZMA compression error");
+                                this->qlogger.error("Compression Error: LZMA compression error");
+                                return false;
                             }
 
                             ofs.write(outbuf, sizeof(outbuf) - strm.avail_out);
@@ -150,18 +192,21 @@ namespace whz {
                 }
             }
             lzma_end(&strm);
+            return true;
         }
 
-        void decompress7z(const fs::path& archive, const fs::path& outputDir) {
+        bool decompress7z(const fs::path& archive, const fs::path& outputDir) {
             lzma_stream strm = LZMA_STREAM_INIT;
             if (lzma_auto_decoder(&strm, UINT64_MAX, 0) != LZMA_OK) {
-                throw std::runtime_error("Failed to initialize LZMA decoder");
+                this->qlogger.error("Decompression Error: Failed to initialize LZMA decoder");
+                return false;
             }
 
             std::ifstream ifs(archive, std::ios::binary);
             if (!ifs) {
                 lzma_end(&strm);
-                throw std::runtime_error("Failed to open input archive");
+                this->qlogger.error("Decompression Error: Failed to open input archive");
+                return false;
             }
 
             fs::create_directories(outputDir);
@@ -180,31 +225,17 @@ namespace whz {
                     lzma_ret ret = lzma_code(&strm, LZMA_RUN);
                     if (ret != LZMA_OK && ret != LZMA_STREAM_END) {
                         lzma_end(&strm);
-                        throw std::runtime_error("LZMA decompression error");
+                        this->qlogger.error("Decompression Error: LZMA decompression error");
+                        return false;
                     }
                     ofs.write(outbuf, sizeof(outbuf) - strm.avail_out);
                 }
             }
             lzma_end(&strm);
+            return true;
         }
+
+    private:
+        whz_qlogger qlogger;
     };
 } // whz
-
-/* Example code
-int main() {
-    whz::whz_datacompression handler;
-    std::vector<fs::path> files = {"example1.txt", "example2.txt"};
-    handler.compress(files, "zipped_output.zip", ".zip");
-    handler.compress(files, "7zipped_output.7z", ".7z");
-    handler.decompress("zipped_output.zip", "zip_output_dir");
-    handler.decompress("7zipped_output.zip", "7z_output_dir");
-
-    // Compress and decompress a directory recursively
-    handler.compressDirectory("compress_example_dir", "zipped_output_dir.zip", ".zip");
-    handler.compressDirectory("compress_example_dir", "7zipped_output_dir.7z", ".7z");
-    handler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
-    handler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
-
-    return 0;
-}
- */
