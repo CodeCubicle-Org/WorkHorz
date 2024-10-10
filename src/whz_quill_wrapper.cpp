@@ -2,7 +2,7 @@
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/LogMacros.h"
-#include "quill/logger.h"
+#include "quill/Logger.h"
 //#include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/RotatingFileSink.h"
 #include "quill/backend/PatternFormatter.h"
@@ -29,6 +29,7 @@ namespace whz {
                                                          rfh_cfg.set_remove_old_files(false);
                                                          rfh_cfg.set_timezone(quill::Timezone::LocalTime);
                                                          rfh_cfg.set_rotation_naming_scheme(quill::RotatingFileSinkConfig::RotationNamingScheme::DateAndTime);
+                                                         rfh_cfg.set_filename_append_option( quill::FilenameAppendOption::StartDateTime);
                                                          return rfh_cfg;
                                                      }());
 
