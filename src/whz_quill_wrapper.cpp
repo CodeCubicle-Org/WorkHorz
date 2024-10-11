@@ -9,6 +9,7 @@
 #include "fmt/core.h"
 #include "fmt/format.h"
 #include "fmt/std.h"
+#include "whz_config.hpp"
 
 
 namespace whz {
@@ -47,41 +48,66 @@ namespace whz {
     }
 
     void whz_qlogger::trace_L3(const std::string& fmtstr) {
-        LOG_TRACE_L3(this->qlogger, "{}", fmtstr);
-
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L3))) {
+            LOG_TRACE_L3(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::trace_L2(const std::string& fmtstr) {
-        LOG_TRACE_L2(this->qlogger, "{}", fmtstr);
-
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L2))) {
+            LOG_TRACE_L2(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::trace_L1(const std::string& fmtstr) {
-        LOG_TRACE_L1(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L1))) {
+            LOG_TRACE_L1(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::debug(const std::string& fmtstr) {
-        LOG_DEBUG(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_DEBUG))) {
+            LOG_DEBUG(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::info(const std::string& fmtstr) {
-        LOG_INFO(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO))) {
+            LOG_INFO(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::warning(const std::string& fmtstr) {
-        LOG_WARNING(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_WARNING))) {
+            LOG_WARNING(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::error(const std::string& fmtstr) {
-        LOG_ERROR(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR))) {
+            LOG_ERROR(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::critical(const std::string& fmtstr) {
-        LOG_CRITICAL(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_CRITICAL))) {
+            LOG_CRITICAL(this->qlogger, "{}", fmtstr);
+        }
     }
 
     void whz_qlogger::backtrace(const std::string& fmtstr) {
-        LOG_BACKTRACE(this->qlogger, "{}", fmtstr);
+        // Check if the value from Config is true then log, else do nothing
+        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_BACKTRACE))) {
+            LOG_BACKTRACE(this->qlogger, "{}", fmtstr);
+        }
     }
 
     /** Flushes the log and stops the backend process explicitly if this is the last object to close. Has to be called

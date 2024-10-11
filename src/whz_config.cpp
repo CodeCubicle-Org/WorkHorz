@@ -14,7 +14,7 @@ namespace whz {
      * @param sfilepath The path to the configuration file as string
      * @return bool True if the configuration file was loaded and read successfully, false otherwise
      */
-    bool Config::read_config(const std::string& sfilepath) {
+    bool Config::read_config(const std::string&sfilepath) {
         bool bRet = false;
 
         // Check that the file sfilepath exists
@@ -30,8 +30,8 @@ namespace whz {
             } else {
                 std::string key = "";
 
-                for (auto &param: doc.get_object()) {
-                    key = std::any_cast<std::string const &>(param.key);
+                for (auto&param: doc.get_object()) {
+                    key = std::any_cast<std::string const&>(param.key);
 
                     ConfigParameter paramEnum = ConfigParameter::UNKNOWN;
                     if (key == "SERVER_HTTP_PORT") paramEnum = ConfigParameter::SERVER_HTTP_PORT;
@@ -45,7 +45,8 @@ namespace whz {
                     else if (key == "CONNECTION_TIMEOUT_MS") paramEnum = ConfigParameter::CONNECTION_TIMEOUT_MS;
                     else if (key == "SERVER_DOMAINNAME") paramEnum = ConfigParameter::SERVER_DOMAINNAME;
                     else if (key == "SERVER_SSL_CERTPATH") paramEnum = ConfigParameter::SERVER_SSL_CERTPATH;
-                    else if (key == "CONNECTION_MAX_IO_CONTEXTS") paramEnum = ConfigParameter::CONNECTION_MAX_IO_CONTEXTS;
+                    else if (key == "CONNECTION_MAX_IO_CONTEXTS")
+                        paramEnum = ConfigParameter::CONNECTION_MAX_IO_CONTEXTS;
                     else if (key == "CONNECTION_USE_IOURING") paramEnum = ConfigParameter::CONNECTION_USE_IOURING;
                     else if (key == "THREADPOOL_SIZE") paramEnum = ConfigParameter::THREADPOOL_SIZE;
                     else if (key == "CPU_CORES") paramEnum = ConfigParameter::CPU_CORES;
@@ -63,6 +64,21 @@ namespace whz {
                     else if (key == "LUA_SCRIPT_PATH") paramEnum = ConfigParameter::LUA_SCRIPT_PATH;
                     else if (key == "LUA_START_SCRIPT_FILENAME") paramEnum = ConfigParameter::LUA_START_SCRIPT_FILENAME;
                     else if (key == "LUA_GC_STEPSIZE") paramEnum = ConfigParameter::LUA_GC_STEPSIZE;
+                    else if (key == "LOG_TRACE_L3") paramEnum = ConfigParameter::LOG_TRACE_L3;
+                    else if (key == "LOG_TRACE_L2") paramEnum = ConfigParameter::LOG_TRACE_L2;
+                    else if (key == "LOG_TRACE_L1") paramEnum = ConfigParameter::LOG_TRACE_L1;
+                    else if (key == "LOG_DEBUG") paramEnum = ConfigParameter::LOG_DEBUG;
+                    else if (key == "LOG_INFO") paramEnum = ConfigParameter::LOG_INFO;
+                    else if (key == "LOG_WARNING") paramEnum = ConfigParameter::LOG_WARNING;
+                    else if (key == "LOG_ERROR") paramEnum = ConfigParameter::LOG_ERROR;
+                    else if (key == "LOG_CRITICAL") paramEnum = ConfigParameter::LOG_CRITICAL;
+                    else if (key == "LOG_BACKTRACE") paramEnum = ConfigParameter::LOG_BACKTRACE;
+                    else if (key == "LOG_FILENAME") paramEnum = ConfigParameter::LOG_FILENAME;
+                    else if (key == "LOG_ROTATION_DAYS") paramEnum = ConfigParameter::LOG_ROTATION_DAYS;
+                    else if (key == "LOG_ROTATION_MB") paramEnum = ConfigParameter::LOG_ROTATION_MB;
+                    else if (key == "LOG_PATH") paramEnum = ConfigParameter::LOG_PATH;
+                    //else if (key == "LOG_CONSOLE") paramEnum = ConfigParameter::LOG_CONSOLE;
+
 
                     switch (paramEnum) {
                         case ConfigParameter::SERVER_HTTP_PORT:
@@ -149,8 +165,47 @@ namespace whz {
                         case ConfigParameter::LUA_START_SCRIPT_FILENAME:
                             lua_start_script_filename = std::string(param.value.get_c_str());
                             break;
-                            case ConfigParameter::LUA_GC_STEPSIZE:
+                        case ConfigParameter::LUA_GC_STEPSIZE:
                             lua_gc_stepsize = param.value.get_uint64();
+                            break;
+                        case ConfigParameter::LOG_TRACE_L3:
+                            log_trace_L3 = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_TRACE_L2:
+                            log_trace_L2 = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_TRACE_L1:
+                            log_trace_L1 = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_DEBUG:
+                            log_debug = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_INFO:
+                            log_info = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_WARNING:
+                            log_warning = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_ERROR:
+                            log_error = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_CRITICAL:
+                            log_critical = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_BACKTRACE:
+                            log_backtrace = param.value.get_bool();
+                            break;
+                        case ConfigParameter::LOG_FILENAME:
+                            log_filename = std::string(param.value.get_c_str());
+                            break;
+                        case ConfigParameter::LOG_ROTATION_DAYS:
+                            log_rotation_days = param.value.get_uint64();
+                            break;
+                        case ConfigParameter::LOG_ROTATION_MB:
+                            log_rotation_mb = param.value.get_uint64();
+                            break;
+                        case ConfigParameter::LOG_PATH:
+                            log_path = std::string(param.value.get_c_str());
                             break;
                         default:
                             break;
@@ -263,9 +318,49 @@ namespace whz {
             case ConfigParameter::LUA_START_SCRIPT_FILENAME:
                 value = lua_start_script_filename;
                 break;
-                case ConfigParameter::LUA_GC_STEPSIZE:
+            case ConfigParameter::LUA_GC_STEPSIZE:
                 value = lua_gc_stepsize;
                 break;
+            case ConfigParameter::LOG_TRACE_L3:
+                value = log_trace_L3;
+                break;
+            case ConfigParameter::LOG_TRACE_L2:
+                value = log_trace_L2;
+                break;
+            case ConfigParameter::LOG_TRACE_L1:
+                value = log_trace_L1;
+                break;
+            case ConfigParameter::LOG_DEBUG:
+                value = log_debug;
+                break;
+            case ConfigParameter::LOG_INFO:
+                value = log_info;
+                break;
+            case ConfigParameter::LOG_WARNING:
+                value = log_warning;
+                break;
+            case ConfigParameter::LOG_ERROR:
+                value = log_error;
+                break;
+            case ConfigParameter::LOG_CRITICAL:
+                value = log_critical;
+                break;
+            case ConfigParameter::LOG_BACKTRACE:
+                value = log_backtrace;
+                break;
+            case ConfigParameter::LOG_FILENAME:
+                value = log_filename;
+                break;
+            case ConfigParameter::LOG_ROTATION_DAYS:
+                value = log_rotation_days;
+                break;
+            case ConfigParameter::LOG_ROTATION_MB:
+                value = log_rotation_mb;
+                break;
+            case ConfigParameter::LOG_PATH:
+                value = log_path;
+                break;
+
             default:
                 value = "Unknown";
                 break;
