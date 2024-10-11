@@ -32,9 +32,9 @@ namespace whz {
                 std::cout << "After successful parser.load() of config file: " << sfilepath << std::endl;
                 std::string key = "";
 
-                for (auto&param: doc.get_object()) {
-                    key = std::any_cast<std::string const&>(param.key);
-
+                for (auto& param: doc.get_object()) {
+                    key = param.key;
+                    std::cout << "Key value: " << key << std::endl;
                     ConfigParameter paramEnum = ConfigParameter::UNKNOWN;
                     // ----- SERVER -----
                     if (key == "SERVER_HTTP_PORT") paramEnum = ConfigParameter::SERVER_HTTP_PORT;
@@ -89,16 +89,36 @@ namespace whz {
 
                     switch (paramEnum) {
                         case ConfigParameter::SERVER_HTTP_PORT:
-                            server_http_port = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                server_http_port = param.value.get_uint64();
+                            }
+                            else {
+                                server_http_port = 0;
+                            }
                             break;
                         case ConfigParameter::SERVER_HTTPS_PORT:
-                            server_https_port = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                server_https_port = param.value.get_uint64();
+                            }
+                            else {
+                                server_https_port = 0;
+                            }
                             break;
                         case ConfigParameter::SERVER_ROOTPATH:
-                            server_rootpath = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                server_rootpath = param.value.get_c_str();
+                            }
+                            else {
+                                server_rootpath = "";
+                            }
                             break;
                         case ConfigParameter::SERVER_LOGPATH:
-                            server_logpath = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                server_logpath = param.value.get_c_str();
+                            }
+                            else {
+                                server_logpath = "";
+                            }
                             break;
                         /*case ConfigParameter::SERVER_LOG_LEVEL_MIN:
                             server_log_level_min = param.value.get_uint64();
@@ -113,106 +133,277 @@ namespace whz {
                             server_log_rotation = std::string(param.value.get_c_str());
                             break;*/
                         case ConfigParameter::CONNECTION_TIMEOUT_MS:
-                            connection_timeout_ms = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                connection_timeout_ms = param.value.get_uint64();
+                            }
+                            else {
+                                connection_timeout_ms = 5000;
+                            }
                             break;
                         case ConfigParameter::SERVER_DOMAINNAME:
-                            server_domainname = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                server_domainname = param.value.get_c_str();
+                            }
+                            else {
+                                server_domainname = "";
+                            }
                             break;
                         case ConfigParameter::SERVER_SSL_CERTPATH:
-                            server_ssl_certpath = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                server_ssl_certpath = param.value.get_c_str();
+                            }
+                            else {
+                                server_ssl_certpath = "";
+                            }
                             break;
                         case ConfigParameter::CONNECTION_MAX_IO_CONTEXTS:
-                            connection_max_io_context = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                connection_max_io_context = param.value.get_uint64();
+                            }
+                            else {
+                                connection_max_io_context = 100;
+                            }
                             break;
                         case ConfigParameter::CONNECTION_USE_IOURING:
-                            connection_use_iouring = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                connection_use_iouring = param.value.get_bool();
+                            }
+                            else {
+                                connection_use_iouring = false;
+                            }
                             break;
                         case ConfigParameter::THREADPOOL_SIZE:
-                            threadpool_size = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                threadpool_size = param.value.get_uint64();
+                            }
+                            else {
+                                threadpool_size = 100;
+                            }
                             break;
                         case ConfigParameter::CPU_CORES:
-                            cpu_cores = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                cpu_cores = param.value.get_uint64();
+                            }
+                            else {
+                                cpu_cores = 8;
+                            }
                             break;
                         case ConfigParameter::REQUESTS_ACTIVE_MAX:
-                            requests_active_max = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                requests_active_max = param.value.get_uint64();
+                            }
+                            else {
+                                requests_active_max = 8;
+                            }
                             break;
                         case ConfigParameter::REQUESTS_QUEUED_MAX:
-                            requests_queued_max = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                requests_queued_max = param.value.get_uint64();
+                            }
+                            else {
+                                requests_queued_max = 100;
+                            }
                             break;
                         case ConfigParameter::AVAILABLE_NODENAMES:
-                            available_nodenames = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                available_nodenames = param.value.get_c_str();
+                            }
+                            else {
+                                available_nodenames = "";
+                            }
                             break;
                         case ConfigParameter::WHZ_CLI_PATH:
-                            whz_cli_path = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                whz_cli_path = param.value.get_c_str();
+                            }
+                            else {
+                                whz_cli_path = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_PATH:
-                            database_path = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_path = param.value.get_c_str();
+                            }
+                            else {
+                                database_path = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_NAME:
-                            database_name = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_name = param.value.get_c_str();
+                            }
+                            else {
+                                database_name = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_USER:
-                            database_user = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_user = param.value.get_c_str();
+                            }
+                            else {
+                                database_user = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_PASSWORD:
-                            database_password = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_password = param.value.get_c_str();
+                            }
+                            else {
+                                database_password = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_PORT:
-                            database_port = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                database_port = param.value.get_uint64();
+                            }
+                            else {
+                                database_port = 0;
+                            }
                             break;
                         case ConfigParameter::DATABASE_HOST:
-                            database_host = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_host = param.value.get_c_str();
+                            }
+                            else {
+                                database_host = "";
+                            }
                             break;
                         case ConfigParameter::DATABASE_ENGINE:
-                            database_engine = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                database_engine = param.value.get_c_str();
+                            }
+                            else {
+                                database_engine = "";
+                            }
                             break;
                         case ConfigParameter::LUA_SCRIPT_PATH:
-                            lua_script_path = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                lua_script_path = param.value.get_c_str();
+                            }
+                            else {
+                                lua_script_path = "";
+                            }
                             break;
                         case ConfigParameter::LUA_START_SCRIPT_FILENAME:
-                            lua_start_script_filename = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                lua_start_script_filename = param.value.get_c_str();
+                            }
+                            else {
+                                lua_start_script_filename = "";
+                            }
                             break;
                         case ConfigParameter::LUA_GC_STEPSIZE:
-                            lua_gc_stepsize = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                lua_gc_stepsize = param.value.get_uint64();
+                            }
+                            else {
+                                lua_gc_stepsize = 1000000; // 1MB
+                            }
                             break;
                         case ConfigParameter::LOG_TRACE_L3:
-                            log_trace_L3 = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_trace_L3 = param.value.get_bool();
+                            }
+                            else {
+                                log_trace_L3 = false;
+                            }
                             break;
                         case ConfigParameter::LOG_TRACE_L2:
-                            log_trace_L2 = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_trace_L2 = param.value.get_bool();
+                            }
+                            else {
+                                log_trace_L2 = false;
+                            }
                             break;
                         case ConfigParameter::LOG_TRACE_L1:
-                            log_trace_L1 = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_trace_L1 = param.value.get_bool();
+                            }
+                            else {
+                                log_trace_L1 = false;
+                            }
                             break;
                         case ConfigParameter::LOG_DEBUG:
-                            log_debug = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_debug = param.value.get_bool();
+                            }
+                            else {
+                                log_debug = false;
+                            }
                             break;
                         case ConfigParameter::LOG_INFO:
-                            log_info = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_info = param.value.get_bool();
+                            }
+                            else {
+                                log_info = false;
+                            }
                             break;
                         case ConfigParameter::LOG_WARNING:
-                            log_warning = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_warning = param.value.get_bool();
+                            }
+                            else {
+                                log_warning = false;
+                            }
                             break;
                         case ConfigParameter::LOG_ERROR:
-                            log_error = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_error = param.value.get_bool();
+                                std::cout << "LOG_ERROR value from file: " << param.value.get_bool() << std::endl;
+                            }
+                            else {
+                                log_error = false;
+                            }
                             break;
                         case ConfigParameter::LOG_CRITICAL:
-                            log_critical = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_critical = param.value.get_bool();
+                            }
+                            else {
+                                log_critical = false;
+                            }
                             break;
                         case ConfigParameter::LOG_BACKTRACE:
-                            log_backtrace = param.value.get_bool();
+                            if (!param.value.is_null()) {
+                                log_backtrace = param.value.get_bool();
+                            }
+                            else {
+                                log_backtrace = false;
+                            }
                             break;
                         case ConfigParameter::LOG_FILENAME:
-                            log_filename = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                log_filename = param.value.get_c_str();
+                            }
+                            else {
+                                log_filename = "";
+                            }
                             break;
                         case ConfigParameter::LOG_ROTATION_DAYS:
-                            log_rotation_days = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                log_rotation_days = param.value.get_uint64();
+                            }
+                            else {
+                                log_rotation_days = 1;
+                            }
                             break;
                         case ConfigParameter::LOG_ROTATION_MB:
-                            log_rotation_mb = param.value.get_uint64();
+                            if (!param.value.is_null()) {
+                                log_rotation_mb = param.value.get_uint64();
+                            }
+                            else {
+                                log_rotation_mb = 50;
+                            }
                             break;
                         case ConfigParameter::LOG_PATH:
-                            log_path = std::string(param.value.get_c_str());
+                            if (!param.value.is_null()) {
+                                log_path = param.value.get_c_str();
+                            }
+                            else {
+                                log_path = "";
+                            }
                             break;
                         default:
                             break;

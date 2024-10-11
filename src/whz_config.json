@@ -31,7 +31,7 @@
   "LOG_DEBUG": "",
   "LOG_INFO": "",
   "LOG_WARNING": "",
-  "LOG_ERROR": "",
+  "LOG_ERROR": true,
   "LOG_CRITICAL": "",
   "LOG_BACKTRACE": "",
   "LOG_FILENAME": "",

@@ -92,7 +92,15 @@ namespace whz {
 
     void whz_qlogger::error(const std::string& fmtstr) {
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR))) {
+        bool bLogVal = false;
+        //std::string log_string = std::any_cast<std::string>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
+        //std::cout << whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR).type() << std::endl;
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR).type() == typeid(bool)) {
+            std::cout << "Type of LOG_ERROR is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
+        }
+        //bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
+        if (bLogVal) {
             LOG_ERROR(this->qlogger, "{}", fmtstr);
         }
     }
