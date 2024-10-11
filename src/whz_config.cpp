@@ -22,18 +22,26 @@ namespace whz {
         if (sfilepath.empty() != true || std::filesystem::exists(sfilepath) == true) {
             // Read the file with simdjson check for errors
             simdjson::dom::parser parser;
-            simdjson::dom::element doc;
+            std::optional<simdjson::dom::element>  doc;
             std::cout << "Before parser.load() of config file: " << sfilepath << std::endl;
-            simdjson::error_code error = parser.load(sfilepath).get(doc);
-            if (error) {
-                std::cerr << "Config Read Error (simdjson): " << error << std::endl;
+
+            //simdjson::error_code result = parser.load(sfilepath).get(doc);
+            auto result = parser.load(sfilepath);//.get(doc);
+            if (result.error()) {
+                std::cerr << "Config Read-File Error (simdjson): " << simdjson::error_message(result.error()) << std::endl;
                 //this->_qlogger.error(fmt::format("Config Error: {}", static_cast<int>(error)));
             } else {
+                doc = std::move(result.value());
+                if (!doc.has_value()) {
+                    std::cerr << "Config Read-File Error: Could not parse the configuration file. Is maybe empty or invalid." << std::endl;
+                    return bRet;
+                }
                 std::cout << "After successful parser.load() of config file: " << sfilepath << std::endl;
                 std::string key = "";
 
-                for (auto& param: doc.get_object()) {
-                    key = param.key;
+                //for (auto& param: doc.value().get_object()) {
+                for (auto [key, value] : doc.value().get_object()) {
+                    //key = param.key;
                     std::cout << "Key value: " << key << std::endl;
                     ConfigParameter paramEnum = ConfigParameter::UNKNOWN;
                     // ----- SERVER -----
@@ -89,32 +97,32 @@ namespace whz {
 
                     switch (paramEnum) {
                         case ConfigParameter::SERVER_HTTP_PORT:
-                            if (!param.value.is_null()) {
-                                server_http_port = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                server_http_port = value.get_uint64();
                             }
                             else {
                                 server_http_port = 0;
                             }
                             break;
                         case ConfigParameter::SERVER_HTTPS_PORT:
-                            if (!param.value.is_null()) {
-                                server_https_port = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                server_https_port = value.get_uint64();
                             }
                             else {
                                 server_https_port = 0;
                             }
                             break;
                         case ConfigParameter::SERVER_ROOTPATH:
-                            if (!param.value.is_null()) {
-                                server_rootpath = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                server_rootpath = value.get_string().value();
                             }
                             else {
                                 server_rootpath = "";
                             }
                             break;
                         case ConfigParameter::SERVER_LOGPATH:
-                            if (!param.value.is_null()) {
-                                server_logpath = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                server_logpath = value.get_string().value();
                             }
                             else {
                                 server_logpath = "";
@@ -133,273 +141,273 @@ namespace whz {
                             server_log_rotation = std::string(param.value.get_c_str());
                             break;*/
                         case ConfigParameter::CONNECTION_TIMEOUT_MS:
-                            if (!param.value.is_null()) {
-                                connection_timeout_ms = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                connection_timeout_ms = value.get_uint64();
                             }
                             else {
                                 connection_timeout_ms = 5000;
                             }
                             break;
                         case ConfigParameter::SERVER_DOMAINNAME:
-                            if (!param.value.is_null()) {
-                                server_domainname = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                server_domainname = value.get_string().value();
                             }
                             else {
                                 server_domainname = "";
                             }
                             break;
                         case ConfigParameter::SERVER_SSL_CERTPATH:
-                            if (!param.value.is_null()) {
-                                server_ssl_certpath = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                server_ssl_certpath = value.get_string().value();
                             }
                             else {
                                 server_ssl_certpath = "";
                             }
                             break;
                         case ConfigParameter::CONNECTION_MAX_IO_CONTEXTS:
-                            if (!param.value.is_null()) {
-                                connection_max_io_context = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                connection_max_io_context = value.get_uint64();
                             }
                             else {
                                 connection_max_io_context = 100;
                             }
                             break;
                         case ConfigParameter::CONNECTION_USE_IOURING:
-                            if (!param.value.is_null()) {
-                                connection_use_iouring = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                connection_use_iouring = value.get_bool();
                             }
                             else {
                                 connection_use_iouring = false;
                             }
                             break;
                         case ConfigParameter::THREADPOOL_SIZE:
-                            if (!param.value.is_null()) {
-                                threadpool_size = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                threadpool_size = value.get_uint64();
                             }
                             else {
                                 threadpool_size = 100;
                             }
                             break;
                         case ConfigParameter::CPU_CORES:
-                            if (!param.value.is_null()) {
-                                cpu_cores = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                cpu_cores = value.get_uint64();
                             }
                             else {
                                 cpu_cores = 8;
                             }
                             break;
                         case ConfigParameter::REQUESTS_ACTIVE_MAX:
-                            if (!param.value.is_null()) {
-                                requests_active_max = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                requests_active_max = value.get_uint64();
                             }
                             else {
                                 requests_active_max = 8;
                             }
                             break;
                         case ConfigParameter::REQUESTS_QUEUED_MAX:
-                            if (!param.value.is_null()) {
-                                requests_queued_max = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                requests_queued_max = value.get_uint64();
                             }
                             else {
                                 requests_queued_max = 100;
                             }
                             break;
                         case ConfigParameter::AVAILABLE_NODENAMES:
-                            if (!param.value.is_null()) {
-                                available_nodenames = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                available_nodenames = value.get_string().value();
                             }
                             else {
                                 available_nodenames = "";
                             }
                             break;
                         case ConfigParameter::WHZ_CLI_PATH:
-                            if (!param.value.is_null()) {
-                                whz_cli_path = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                whz_cli_path = value.get_string().value();
                             }
                             else {
                                 whz_cli_path = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_PATH:
-                            if (!param.value.is_null()) {
-                                database_path = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_path = value.get_string().value();
                             }
                             else {
                                 database_path = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_NAME:
-                            if (!param.value.is_null()) {
-                                database_name = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_name = value.get_string().value();
                             }
                             else {
                                 database_name = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_USER:
-                            if (!param.value.is_null()) {
-                                database_user = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_user = value.get_string().value();
                             }
                             else {
                                 database_user = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_PASSWORD:
-                            if (!param.value.is_null()) {
-                                database_password = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_password = value.get_string().value();
                             }
                             else {
                                 database_password = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_PORT:
-                            if (!param.value.is_null()) {
-                                database_port = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                database_port = value.get_uint64();
                             }
                             else {
                                 database_port = 0;
                             }
                             break;
                         case ConfigParameter::DATABASE_HOST:
-                            if (!param.value.is_null()) {
-                                database_host = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_host = value.get_string().value();
                             }
                             else {
                                 database_host = "";
                             }
                             break;
                         case ConfigParameter::DATABASE_ENGINE:
-                            if (!param.value.is_null()) {
-                                database_engine = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                database_engine = value.get_string().value();
                             }
                             else {
                                 database_engine = "";
                             }
                             break;
                         case ConfigParameter::LUA_SCRIPT_PATH:
-                            if (!param.value.is_null()) {
-                                lua_script_path = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                lua_script_path = value.get_string().value();
                             }
                             else {
                                 lua_script_path = "";
                             }
                             break;
                         case ConfigParameter::LUA_START_SCRIPT_FILENAME:
-                            if (!param.value.is_null()) {
-                                lua_start_script_filename = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                lua_start_script_filename = value.get_string().value();
                             }
                             else {
                                 lua_start_script_filename = "";
                             }
                             break;
                         case ConfigParameter::LUA_GC_STEPSIZE:
-                            if (!param.value.is_null()) {
-                                lua_gc_stepsize = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                lua_gc_stepsize = value.get_uint64();
                             }
                             else {
                                 lua_gc_stepsize = 1000000; // 1MB
                             }
                             break;
                         case ConfigParameter::LOG_TRACE_L3:
-                            if (!param.value.is_null()) {
-                                log_trace_L3 = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_trace_L3 = value.get_bool();
                             }
                             else {
                                 log_trace_L3 = false;
                             }
                             break;
                         case ConfigParameter::LOG_TRACE_L2:
-                            if (!param.value.is_null()) {
-                                log_trace_L2 = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_trace_L2 = value.get_bool();
                             }
                             else {
                                 log_trace_L2 = false;
                             }
                             break;
                         case ConfigParameter::LOG_TRACE_L1:
-                            if (!param.value.is_null()) {
-                                log_trace_L1 = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_trace_L1 = value.get_bool();
                             }
                             else {
                                 log_trace_L1 = false;
                             }
                             break;
                         case ConfigParameter::LOG_DEBUG:
-                            if (!param.value.is_null()) {
-                                log_debug = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_debug = value.get_bool();
                             }
                             else {
                                 log_debug = false;
                             }
                             break;
                         case ConfigParameter::LOG_INFO:
-                            if (!param.value.is_null()) {
-                                log_info = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_info = value.get_bool();
                             }
                             else {
                                 log_info = false;
                             }
                             break;
                         case ConfigParameter::LOG_WARNING:
-                            if (!param.value.is_null()) {
-                                log_warning = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_warning = value.get_bool();
                             }
                             else {
                                 log_warning = false;
                             }
                             break;
                         case ConfigParameter::LOG_ERROR:
-                            if (!param.value.is_null()) {
-                                log_error = param.value.get_bool();
-                                std::cout << "LOG_ERROR value from file: " << param.value.get_bool() << std::endl;
+                            if (!value.is_null() && value.is_bool()) {
+                                log_error = value.get_bool();
+                                std::cout << "LOG_ERROR value from file: " << value.get_bool() << std::endl;
                             }
                             else {
                                 log_error = false;
                             }
                             break;
                         case ConfigParameter::LOG_CRITICAL:
-                            if (!param.value.is_null()) {
-                                log_critical = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_critical = value.get_bool();
                             }
                             else {
                                 log_critical = false;
                             }
                             break;
                         case ConfigParameter::LOG_BACKTRACE:
-                            if (!param.value.is_null()) {
-                                log_backtrace = param.value.get_bool();
+                            if (!value.is_null() && value.is_bool()) {
+                                log_backtrace = value.get_bool();
                             }
                             else {
                                 log_backtrace = false;
                             }
                             break;
                         case ConfigParameter::LOG_FILENAME:
-                            if (!param.value.is_null()) {
-                                log_filename = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                log_filename = value.get_string().value();
                             }
                             else {
                                 log_filename = "";
                             }
                             break;
                         case ConfigParameter::LOG_ROTATION_DAYS:
-                            if (!param.value.is_null()) {
-                                log_rotation_days = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                log_rotation_days = value.get_uint64();
                             }
                             else {
                                 log_rotation_days = 1;
                             }
                             break;
                         case ConfigParameter::LOG_ROTATION_MB:
-                            if (!param.value.is_null()) {
-                                log_rotation_mb = param.value.get_uint64();
+                            if (!value.is_null() && value.is_uint64()) {
+                                log_rotation_mb = value.get_uint64();
                             }
                             else {
                                 log_rotation_mb = 50;
                             }
                             break;
                         case ConfigParameter::LOG_PATH:
-                            if (!param.value.is_null()) {
-                                log_path = param.value.get_c_str();
+                            if (!value.is_null() && value.is_string()) {
+                                log_path = value.get_string().value();
                             }
                             else {
                                 log_path = "";
