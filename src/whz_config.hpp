@@ -76,7 +76,11 @@ namespace whz {
 
         std::any get_config_value(ConfigParameter eParam);
 
+        bool createJSON_config(const std::string& output_filepath);
+
     private:
+        whz_qlogger _qlogger;
+
         // Declarations to prevent copy and move operations for a singleton
         Config()  = default;
         ~Config() = default;
@@ -84,7 +88,6 @@ namespace whz {
         Config& operator=(Config const&) = delete;
         Config(Config&&) = delete;
         Config& operator=(Config&&) = delete;
-        whz::whz_qlogger _qlogger;
 
         bool m_bConfigLoaded = false;
         std::string config_filepath;

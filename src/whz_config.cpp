@@ -4,6 +4,7 @@
 
 #include "whz_config.hpp"
 #include "whz_quill_wrapper.hpp"
+#include "simdjson.h"
 
 namespace whz {
 
@@ -217,7 +218,6 @@ namespace whz {
         } else {
             // File does not exist
             this->_qlogger.error(fmt::format("Config Error: File {} does not exist.", sfilepath));
-            //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Config Error: File {} does not exist.", sfilepath);
             std::cerr << "Config Error: File " << sfilepath << " does not exist." << std::endl;
         }
         return bRet;
@@ -367,4 +367,30 @@ namespace whz {
         }
         return value;
     }
+
+    bool Config::createJSON_config(const std::string& output_filepath) {
+        bool bRet = false;
+        simdjson::dom::object json_config;
+
+        // Iterate over the enum values and retrieve their configuration values
+        for (uint8_t i = static_cast<uint8_t>(ConfigParameter::SERVER_HTTP_PORT);
+             i <= static_cast<uint8_t>(ConfigParameter::LOG_PATH); ++i) {
+            ConfigParameter param = static_cast<ConfigParameter>(i);
+            std::string pname = std::any_cast<std::string>(this->get_config_value(param));
+            json_config[pname]; // = std::any_cast<std::string>(get_config_value(param));
+        }
+
+        // Write the JSON object to a file
+        std::ofstream output_file(output_filepath);
+        if (output_file.is_open()) {
+            output_file << simdjson::to_string(json_config); // Convert the JSON object to a string
+            output_file.close();
+        } else {
+            this->_qlogger.error(fmt::format("Unable to open file for writing: {}", output_filepath));
+            return bRet;
+        }
+        bRet = true;
+        return bRet;
+    }
+
 } // whz

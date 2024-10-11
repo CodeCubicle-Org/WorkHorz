@@ -8,6 +8,7 @@
 #include "LocalizationManager.hpp"
 #include "whz_encryption.hpp"
 #include "whz_datacompression.hpp"
+#include "whz_config.hpp"
 
 //extern quill::Logger *whz_qlogger::getInstance().getLogger();
 using namespace whz;
@@ -27,7 +28,6 @@ auto main(int argc, char **argv) -> int {
 
     if (config_path.empty()) {
         qlogger.info("Using default config");
-        //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Using default config");
     }
 
     std::filesystem::path path{"/tmp/whz"};
@@ -35,7 +35,7 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     /// Testing the localization manager & translations
     qlogger.info("Testing Localization Manager");
-    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Testing Localization Manager");
+    std::cout << "Testing Localization Manager" << "\n";
     // Initialize the localization manager
     auto& locManager = LocalizationManager::getInstance();
     locManager.addLocale("path/to/locale", "messages", "en_US");
@@ -66,7 +66,7 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     /// Testing the encryption utilities
     qlogger.info("Test Encryption");
-    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Test Encryption");
+    std::cout << "Test Encryption" << "\n";
     // Generate key pair
     whz::whz_encryption secureUtils;
     std::vector<unsigned char> publicKey, secretKey;
@@ -104,10 +104,11 @@ auto main(int argc, char **argv) -> int {
     std::string verified_message = secureUtils.verifySignedMessage(signed_message, pubKey);
     std::cout << "Verified Message: " << verified_message << "\n";
     // --------------------------------------------------------------------------------
-
+    std::cout << std::endl;
     // --------------------------------------------------------------------------------
     /// Testing the file compression utilities
     qlogger.info("Test File Compression");
+    std::cout << "Test File Compression" << "\n";
     whz::whz_datacompression dchandler;
     std::vector<fs::path> files = {"example1.txt", "example2.txt"};
     dchandler.compress(files, "zipped_output.zip", ".zip");
@@ -121,14 +122,30 @@ auto main(int argc, char **argv) -> int {
     dchandler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
     dchandler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
     // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Writing out the latest configuration parameters to a JSON file
+    if (whz::Config::get_instance().is_config_loaded()) {
+        bool bRet = whz::Config::get_instance().createJSON_config("whz_config.json");  // Create in same folder as executable
+        if (bRet) {
+            qlogger.info("Configuration written to JSON file.");
+            std::cout << "Configuration written to JSON file.\n";
+        } else {
+            qlogger.error("Error writing configuration to JSON file.");
+            std::cerr << "Error writing configuration to JSON file.\n";
+        }
+    }
 
+    // --------------------------------------------------------------------------------
     std::cout << std::endl;
 
     qlogger.info("Starting WHZ");
+    std::cout << "Starting WHZ" << std::endl;
     //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Starting WHZ");
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
     s.listen_and_serve();
+    std::cout << std::endl;
     return 0;
 }
 
