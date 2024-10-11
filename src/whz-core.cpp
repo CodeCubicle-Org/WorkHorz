@@ -135,9 +135,9 @@ auto main(int argc, char **argv) -> int {
             std::cerr << "Error writing configuration to JSON file.\n";
         }
     }
-
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
+
 
     qlogger.info("Starting WHZ");
     std::cout << "Starting WHZ" << std::endl;

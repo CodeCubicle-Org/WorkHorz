@@ -360,7 +360,6 @@ namespace whz {
             case ConfigParameter::LOG_PATH:
                 value = log_path;
                 break;
-
             default:
                 value = "Unknown";
                 break;
@@ -377,7 +376,7 @@ namespace whz {
              i <= static_cast<uint8_t>(ConfigParameter::LOG_PATH); ++i) {
             ConfigParameter param = static_cast<ConfigParameter>(i);
             std::string pname = std::any_cast<std::string>(this->get_config_value(param));
-            json_config[pname]; // = std::any_cast<std::string>(get_config_value(param));
+            json_config[pname];
         }
 
         // Write the JSON object to a file
