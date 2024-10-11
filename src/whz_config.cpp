@@ -15,34 +15,36 @@ namespace whz {
      * @param sfilepath The path to the configuration file as string
      * @return bool True if the configuration file was loaded and read successfully, false otherwise
      */
-    bool Config::read_config(const std::string&sfilepath) {
+    bool Config::read_config(const std::string& sfilepath) {
         bool bRet = false;
 
         // Check that the file sfilepath exists
-        if (std::filesystem::exists(sfilepath)) {
+        if (sfilepath.empty() != true || std::filesystem::exists(sfilepath) == true) {
             // Read the file with simdjson check for errors
             simdjson::dom::parser parser;
             simdjson::dom::element doc;
+            std::cout << "Before parser.load() of config file: " << sfilepath << std::endl;
             simdjson::error_code error = parser.load(sfilepath).get(doc);
             if (error) {
-                this->_qlogger.error(fmt::format("Config Error: {}", static_cast<int>(error)));
-                //LOG_ERROR(whz_qlogger::getInstance().getLogger(), "Config Error: {}", error);
-                std::cerr << "Config Error: " << error << std::endl;
+                std::cerr << "Config Read Error (simdjson): " << error << std::endl;
+                //this->_qlogger.error(fmt::format("Config Error: {}", static_cast<int>(error)));
             } else {
+                std::cout << "After successful parser.load() of config file: " << sfilepath << std::endl;
                 std::string key = "";
 
                 for (auto&param: doc.get_object()) {
                     key = std::any_cast<std::string const&>(param.key);
 
                     ConfigParameter paramEnum = ConfigParameter::UNKNOWN;
+                    // ----- SERVER -----
                     if (key == "SERVER_HTTP_PORT") paramEnum = ConfigParameter::SERVER_HTTP_PORT;
                     else if (key == "SERVER_HTTPS_PORT") paramEnum = ConfigParameter::SERVER_HTTPS_PORT;
                     else if (key == "SERVER_ROOTPATH") paramEnum = ConfigParameter::SERVER_ROOTPATH;
                     else if (key == "SERVER_LOGPATH") paramEnum = ConfigParameter::SERVER_LOGPATH;
-                    else if (key == "SERVER_LOG_LEVEL_MIN") paramEnum = ConfigParameter::SERVER_LOG_LEVEL_MIN;
-                    else if (key == "SERVER_LOG_FILENAME") paramEnum = ConfigParameter::SERVER_LOG_FILENAME;
-                    else if (key == "SERVER_LOG_POSTFIX") paramEnum = ConfigParameter::SERVER_LOG_POSTFIX;
-                    else if (key == "SERVER_LOG_ROTATION") paramEnum = ConfigParameter::SERVER_LOG_ROTATION;
+                    //else if (key == "SERVER_LOG_LEVEL_MIN") paramEnum = ConfigParameter::SERVER_LOG_LEVEL_MIN;
+                    //else if (key == "SERVER_LOG_FILENAME") paramEnum = ConfigParameter::SERVER_LOG_FILENAME;
+                    //else if (key == "SERVER_LOG_POSTFIX") paramEnum = ConfigParameter::SERVER_LOG_POSTFIX;
+                    //else if (key == "SERVER_LOG_ROTATION") paramEnum = ConfigParameter::SERVER_LOG_ROTATION;
                     else if (key == "CONNECTION_TIMEOUT_MS") paramEnum = ConfigParameter::CONNECTION_TIMEOUT_MS;
                     else if (key == "SERVER_DOMAINNAME") paramEnum = ConfigParameter::SERVER_DOMAINNAME;
                     else if (key == "SERVER_SSL_CERTPATH") paramEnum = ConfigParameter::SERVER_SSL_CERTPATH;
@@ -54,7 +56,9 @@ namespace whz {
                     else if (key == "REQUESTS_ACTIVE_MAX") paramEnum = ConfigParameter::REQUESTS_ACTIVE_MAX;
                     else if (key == "REQUESTS_QUEUED_MAX") paramEnum = ConfigParameter::REQUESTS_QUEUED_MAX;
                     else if (key == "AVAILABLE_NODENAMES") paramEnum = ConfigParameter::AVAILABLE_NODENAMES;
+                    // ----- WHZ-CLI -----
                     else if (key == "WHZ_CLI_PATH") paramEnum = ConfigParameter::WHZ_CLI_PATH;
+                    // ----- DATABASE -----
                     else if (key == "DATABASE_PATH") paramEnum = ConfigParameter::DATABASE_PATH;
                     else if (key == "DATABASE_NAME") paramEnum = ConfigParameter::DATABASE_NAME;
                     else if (key == "DATABASE_USER") paramEnum = ConfigParameter::DATABASE_USER;
@@ -62,9 +66,11 @@ namespace whz {
                     else if (key == "DATABASE_PORT") paramEnum = ConfigParameter::DATABASE_PORT;
                     else if (key == "DATABASE_HOST") paramEnum = ConfigParameter::DATABASE_HOST;
                     else if (key == "DATABASE_ENGINE") paramEnum = ConfigParameter::DATABASE_ENGINE;
+                    // ----- LUA -----
                     else if (key == "LUA_SCRIPT_PATH") paramEnum = ConfigParameter::LUA_SCRIPT_PATH;
                     else if (key == "LUA_START_SCRIPT_FILENAME") paramEnum = ConfigParameter::LUA_START_SCRIPT_FILENAME;
                     else if (key == "LUA_GC_STEPSIZE") paramEnum = ConfigParameter::LUA_GC_STEPSIZE;
+                    // ----- LOGGING -----
                     else if (key == "LOG_TRACE_L3") paramEnum = ConfigParameter::LOG_TRACE_L3;
                     else if (key == "LOG_TRACE_L2") paramEnum = ConfigParameter::LOG_TRACE_L2;
                     else if (key == "LOG_TRACE_L1") paramEnum = ConfigParameter::LOG_TRACE_L1;
@@ -94,7 +100,7 @@ namespace whz {
                         case ConfigParameter::SERVER_LOGPATH:
                             server_logpath = std::string(param.value.get_c_str());
                             break;
-                        case ConfigParameter::SERVER_LOG_LEVEL_MIN:
+                        /*case ConfigParameter::SERVER_LOG_LEVEL_MIN:
                             server_log_level_min = param.value.get_uint64();
                             break;
                         case ConfigParameter::SERVER_LOG_FILENAME:
@@ -105,7 +111,7 @@ namespace whz {
                             break;
                         case ConfigParameter::SERVER_LOG_ROTATION:
                             server_log_rotation = std::string(param.value.get_c_str());
-                            break;
+                            break;*/
                         case ConfigParameter::CONNECTION_TIMEOUT_MS:
                             connection_timeout_ms = param.value.get_uint64();
                             break;
@@ -217,8 +223,8 @@ namespace whz {
             }
         } else {
             // File does not exist
-            this->_qlogger.error(fmt::format("Config Error: File {} does not exist.", sfilepath));
             std::cerr << "Config Error: File " << sfilepath << " does not exist." << std::endl;
+            //this->_qlogger.error(fmt::format("Config Error: File {} does not exist.", sfilepath));
         }
         return bRet;
     }
@@ -246,7 +252,7 @@ namespace whz {
             case ConfigParameter::SERVER_LOGPATH:
                 value = server_logpath;
                 break;
-            case ConfigParameter::SERVER_LOG_LEVEL_MIN:
+            /*case ConfigParameter::SERVER_LOG_LEVEL_MIN:
                 value = server_log_level_min;
                 break;
             case ConfigParameter::SERVER_LOG_FILENAME:
@@ -257,7 +263,7 @@ namespace whz {
                 break;
             case ConfigParameter::SERVER_LOG_ROTATION:
                 value = server_log_rotation;
-                break;
+                break;*/
             case ConfigParameter::CONNECTION_TIMEOUT_MS:
                 value = connection_timeout_ms;
                 break;

@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <print>
 #include <optional>
+#include <iostream>
 
 #include "CLI/CLI.hpp"
 #include "whz_quill_wrapper.hpp"
@@ -10,25 +11,54 @@
 #include "whz_datacompression.hpp"
 #include "whz_config.hpp"
 
-//extern quill::Logger *whz_qlogger::getInstance().getLogger();
+#define WHZ_VERSION "0.0.1"
+
 using namespace whz;
 
 auto main(int argc, char **argv) -> int {
-    //setup_quill();
 
-    CLI::App app{"WorkHorz server"};
-    argv = app.ensure_utf8(argv);
-    whz::whz_qlogger qlogger;
+    std::cout << "*** Start of server" << std::endl;
+    CLI::App app{fmt::format("WorkHorz Web-App Server - Version: {}", WHZ_VERSION)};
+    // argv = app.ensure_utf8(argv); // Only useful on Windows
+    std::cout << "*** Start of CLI11" << std::endl;
 
     std::string config_path;
-    [[maybe_unused]] CLI::Option *opt = app.add_option("-c, --config,config", config_path,
-                                                       "Path to WorkHorz config file");
+    [[maybe_unused]] CLI::Option *opt = app.add_option("-c, --config", config_path,
+                                                       "Path to WorkHorz config file, default: ./whz_config.json");
 
-    CLI11_PARSE(app, argc, argv);
-
-    if (config_path.empty()) {
-        qlogger.info("Using default config");
+    // Read the commandline arguments
+    try {
+        app.parse(argc, argv);
+    } catch(const CLI::ParseError &e) {
+        std::cerr << "ERROR: Commandline parsing failed, aborting." << e.what() << std::endl;
+        exit(app.exit(e)); // Exit command from CLI11
     }
+
+    // Create the config object
+    whz::Config::get_instance();
+
+    // Config must first be read successfully, else abort! Logging can only be used after a successful config read
+    std::cout << "Before Config reading..." << std::endl;
+    if (config_path.empty()) {
+        std::cerr << "No config file provided at commandline, using default config of ./whz_config.json" << std::endl;
+        if (!whz::Config::get_instance().read_config("whz_config.json")) {
+            std::cerr << "Error reading configuration file" << std::endl;
+            return 1;
+        }
+        std::cout << "After successful Config reading..." << std::endl;
+    }
+    else {
+        std::cout << "Using the provided config file-path: " << config_path << std::endl;
+        if (!whz::Config::get_instance().read_config(config_path)) {
+            std::cerr << "Error reading configuration file" << std::endl;
+            return 1;
+        }
+        std::cout << "After successful Config reading..." << std::endl;
+    }
+
+    whz::whz_qlogger qlogger;
+    qlogger.error("Error reading configuration file");
+    std::cout << "After 1st logging call..." << std::endl;
 
     std::filesystem::path path{"/tmp/whz"};
 

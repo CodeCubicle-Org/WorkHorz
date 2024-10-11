@@ -34,10 +34,10 @@ namespace whz {
             SERVER_HTTPS_PORT,      /// HTTPS port to listen on
             SERVER_ROOTPATH,        /// Base path of the server in which all server files are located (in subdirs)
             SERVER_LOGPATH,         /// Path to the log files
-            SERVER_LOG_LEVEL_MIN,   /// Minimum log level at which to log
-            SERVER_LOG_FILENAME,    /// Filename of the log file (prefix)
-            SERVER_LOG_POSTFIX,     /// Postfix of the log file (POSTFIX)
-            SERVER_LOG_ROTATION,    /// Log rotation in days (e.g. "3d") or in Megabytes (e.g. "50MB")
+            //SERVER_LOG_LEVEL_MIN,   /// Minimum log level at which to log
+            //SERVER_LOG_FILENAME,    /// Filename of the log file (prefix)
+            //SERVER_LOG_POSTFIX,     /// Postfix of the log file (POSTFIX)
+            //SERVER_LOG_ROTATION,    /// Log rotation in days (e.g. "3d") or in Megabytes (e.g. "50MB")
             CONNECTION_TIMEOUT_MS,  /// Connection timeout in milliseconds
             SERVER_DOMAINNAME,      /// Base-domain name of the server e.g. myserver.ch
             SERVER_SSL_CERTPATH,    /// Path to the SSL certificate files (PEM)
@@ -95,10 +95,10 @@ namespace whz {
         std::any server_https_port;
         std::any server_rootpath;
         std::any server_logpath;
-        std::any server_log_level_min;
-        std::any server_log_filename;
-        std::any server_log_postfix;
-        std::any server_log_rotation;
+        //std::any server_log_level_min;
+        //std::any server_log_filename;
+        //std::any server_log_postfix;
+        //std::any server_log_rotation;
         std::any connection_timeout_ms;
         std::any server_domainname;
         std::any server_ssl_certpath;

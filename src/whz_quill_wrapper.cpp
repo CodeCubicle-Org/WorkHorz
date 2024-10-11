@@ -77,7 +77,8 @@ namespace whz {
 
     void whz_qlogger::info(const std::string& fmtstr) {
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO))) {
+        bool bLogInfo = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO));
+        if (bLogInfo) {
             LOG_INFO(this->qlogger, "{}", fmtstr);
         }
     }
