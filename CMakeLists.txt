@@ -25,6 +25,8 @@ find_package(ftxui CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED) # for libsodium
 find_package(libzip CONFIG REQUIRED)
 find_package(liblzma CONFIG REQUIRED)
+find_package(SQLiteCpp REQUIRED)
+find_package(unofficial-nayuki-qr-code-generator CONFIG REQUIRED)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/whz_logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -52,6 +54,8 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_encryption.cpp
                src/whz_template_parser.cpp
                src/whz_datacompression.cpp
+               src/whz_vcard.cpp
+               #src/whz_templating.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
@@ -86,6 +90,8 @@ target_link_libraries(whz-core PRIVATE
   bustache::bustache
   libzip::zip
   liblzma::liblzma
+  SQLiteCpp
+  unofficial::nayuki-qr-code-generator::nayuki-qr-code-generator
 )
 
 if (BUILD_TESTING)

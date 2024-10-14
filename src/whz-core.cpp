@@ -10,6 +10,8 @@
 #include "whz_encryption.hpp"
 #include "whz_datacompression.hpp"
 #include "whz_config.hpp"
+//#include "whz_templating.hpp"
+#include "whz_vcard.hpp"
 
 #define WHZ_VERSION "0.0.1"
 
@@ -167,6 +169,39 @@ auto main(int argc, char **argv) -> int {
     }
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the TemplateProcessor
+    /*auto processor_exp = TemplateProcessor::Create("database.db");
+    if (!processor_exp) {
+        std::cerr << "Error: " << processor_exp.error() << std::endl;
+        return 1;
+    }
+    auto processor = std::move(*processor_exp);
+
+    // Set the TemplateDefiner instance
+    auto template_definer = std::make_shared<TemplateDefiner>();
+    processor.SetTemplateDefiner(template_definer);
+
+    // Process the template
+    auto result = processor.ProcessTemplate("template.whzt");
+    if (result) {
+        std::cout << "Rendered Template:\n" << *result << std::endl;
+    } else {
+        std::cerr << "Error: " << result.error() << std::endl;
+    }*/
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    whz_vcard vcard;
+    vcard.addProperty("FN", "John Doe");
+    vcard.addProperty("N", "Doe;John;;;");
+    vcard.addProperty("EMAIL", { { "TYPE", "work" } }, "john.doe@example.com");
+    vcard.addProperty("TEL", { { "TYPE", "cell" } }, "+123456789");
+    vcard.addAddress({ { "TYPE", "home" } }, { "", "", "123 Main St", "Anytown", "CA", "12345", "USA" });
+    vcard.addRFC6350Field("URL", { { "TYPE", "work" } }, "https://example.com");
+
+    std::string vcardString = vcard.toString();
+    std::cout << "VCard version 4 (RFC6350): " << vcardString;
 
 
     qlogger.info("Starting WHZ");

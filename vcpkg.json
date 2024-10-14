@@ -86,6 +86,15 @@
     {
       "name": "liblzma",
       "platform": "(linux & x64)"
+    },
+    {
+      "name": "sqlitecpp",
+      "platform": "(linux & x64)"
+    },
+    {
+      "name": "nayuki-qr-code-generator",
+      "platform": "(linux & x64)"
     }
   ]
 }
+
