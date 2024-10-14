@@ -157,8 +157,9 @@ auto main(int argc, char **argv) -> int {
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
     /// Writing out the latest configuration parameters to a JSON file
+    /*
     if (whz::Config::get_instance().is_config_loaded()) {
-        bool bRet = whz::Config::get_instance().createJSON_config("whz_config.json");  // Create in same folder as executable
+        bool bRet = whz::Config::get_instance().createJSON_config("whz_config2.json");  // Create in same folder as executable
         if (bRet) {
             qlogger.info("Configuration written to JSON file.");
             std::cout << "Configuration written to JSON file.\n";
@@ -166,7 +167,7 @@ auto main(int argc, char **argv) -> int {
             qlogger.error("Error writing configuration to JSON file.");
             std::cerr << "Error writing configuration to JSON file.\n";
         }
-    }
+    }*/
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
@@ -193,20 +194,21 @@ auto main(int argc, char **argv) -> int {
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
     whz_vcard vcard;
-    vcard.addProperty("FN", "John Doe");
-    vcard.addProperty("N", "Doe;John;;;");
-    vcard.addProperty("EMAIL", { { "TYPE", "work" } }, "john.doe@example.com");
-    vcard.addProperty("TEL", { { "TYPE", "cell" } }, "+123456789");
-    vcard.addAddress({ { "TYPE", "home" } }, { "", "", "123 Main St", "Anytown", "CA", "12345", "USA" });
-    vcard.addRFC6350Field("URL", { { "TYPE", "work" } }, "https://example.com");
+    vcard.addProperty("FN", "Johann Döttinger");
+    vcard.addProperty("N", "Döttinger;Johann;;;");
+    vcard.addProperty("EMAIL", { { "TYPE", "Work" } }, "johann.doettinger@example.com");
+    vcard.addProperty("TEL", { { "TYPE", "Mobile" } }, "+4179456987");
+    vcard.addAddress({ { "TYPE", "Home" } }, { "", "", "Strassenweg 11", "Zürich", "ZH", "8000", "Switzerland" });
+    vcard.addRFC6350Field("URL", { { "TYPE", "Work" } }, "https://codecubicle.ch");
 
     std::string vcardString = vcard.toString();
-    std::cout << "VCard version 4 (RFC6350): " << vcardString;
+    std::cout << "VCard version 4 (RFC6350):\n-------------------------\n" << vcardString << "-------------------------";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
 
 
-    qlogger.info("Starting WHZ");
-    std::cout << "Starting WHZ" << std::endl;
-    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Starting WHZ");
+    qlogger.info("*** Starting WHZ Listening Server ***");
+    std::cout << "\"*** Starting WHZ Listening Server ***" << std::endl;
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
 
     s.listen_and_serve();

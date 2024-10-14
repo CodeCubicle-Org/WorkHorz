@@ -1,6 +1,6 @@
 {
   "UNKNOWN": 0,
-  "SERVER_HTTP_PORT": "",
+  "SERVER_HTTP_PORT": "8080",
   "SERVER_HTTPS_PORT": "",
   "SERVER_ROOTPATH": "",
   "SERVER_LOGPATH": "",
