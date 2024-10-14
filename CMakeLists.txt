@@ -28,6 +28,7 @@ find_package(liblzma CONFIG REQUIRED)
 find_package(SQLiteCpp REQUIRED)
 find_package(unofficial-nayuki-qr-code-generator CONFIG REQUIRED)
 find_package(PNG REQUIRED)
+find_package(LibArchive REQUIRED)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/whz_logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -95,6 +96,7 @@ target_link_libraries(whz-core PRIVATE
   SQLiteCpp
   unofficial::nayuki-qr-code-generator::nayuki-qr-code-generator
   PNG::PNG
+  LibArchive::LibArchive
 )
 
 if (BUILD_TESTING)

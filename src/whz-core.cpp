@@ -146,10 +146,10 @@ auto main(int argc, char **argv) -> int {
     std::cout << "Test File Compression" << "\n";
     whz::whz_datacompression dchandler;
     std::vector<fs::path> files = {"Baudelaire_pg36287.txt", "Homer-Iliad_pg6130.txt"};
-    dchandler.compress(files, "zipped_output.zip", ".zip");
-    dchandler.compress(files, "7zipped_output.7z", ".7z");
+    dchandler.compress(files, "zipped_output.zip", "zip", 9);
+    dchandler.compress(files, "7zipped_output.7z", "7z", 9);
     dchandler.decompress("zipped_output.zip", "zip_output_dir");
-    dchandler.decompress("7zipped_output.zip", "7z_output_dir");
+    dchandler.decompress("example-archive.7z", "7z_output_dir");
 
     // Compress and decompress a directory recursively
     dchandler.compressDirectory("external", "zipped_output_dir.zip", ".zip");
@@ -233,21 +233,21 @@ auto main(int argc, char **argv) -> int {
     params.backgroundColor = "#FFFFFF";
     params.errorCorrectionLevel = qrcodegen::QrCode::Ecc::MEDIUM;
 
-    std::u8string vCard = u8"BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nORG:Example Corp\nTEL:+123456789\nEMAIL:john.doe@example.com\nEND:VCARD";
+    //std::u8string vCard = u8"BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nORG:Example Corp\nTEL:+123456789\nEMAIL:john.doe@example.com\nEND:VCARD";
 
     // Generate SVG file
-    if (!generator.generateQRCode(vCard, "qrcode.svg", "svg", params)) {
+    if (!generator.generateQRCode(stringToU8String(vcardString), "qrcode.svg", "svg", params)) {
         std::cerr << "Failed to generate SVG QR Code." << std::endl;
         qlogger.error("Failed to generate SVG QR Code.");
     }
 
     // Generate PNG file
-//    if (!generator.generateQRCode(vCard, "qrcode.png", "png", params)) {
+//    if (!generator.generateQRCode(stringToU8String(vcardString), "qrcode.png", "png", params)) {
 //        std::cerr << "Failed to generate PNG QR Code." << std::endl;
 //    }
 
     // Generate Base64 encoded PNG
-    std::string base64Png = generator.generateBase64Bitmap(vCard, params);
+    std::string base64Png = generator.generateBase64Bitmap(stringToU8String(vcardString), params);
     if (base64Png.empty()) {
         std::cerr << "Failed to generate Base64 PNG QR Code." << std::endl;
         qlogger.error("Failed to generate Base64 PNG QR Code.");

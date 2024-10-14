@@ -98,6 +98,13 @@
     {
       "name": "libpng",
       "platform": "(linux & x64)"
+    },
+    {
+      "name": "libarchive",
+      "features": [
+        "lzma"
+      ],
+      "platform": "(linux & x64)"
     }
   ]
 }
