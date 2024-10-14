@@ -106,6 +106,7 @@ namespace whz {
     void whz_qlogger::info(const std::string& fmtstr) {
         bool bLogVal = false;
 
+        std::cout << "Type of LOG_INFO is: " << whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO).type().name() << std::endl;
         if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO).type() == typeid(bool)) {
             std::cout << "Type of LOG_INFO is bool" << std::endl;
             bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO));

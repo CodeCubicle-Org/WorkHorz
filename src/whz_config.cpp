@@ -37,7 +37,7 @@ namespace whz {
                     return bRet;
                 }
                 std::cout << "After successful parser.load() of config file: " << sfilepath << std::endl;
-                std::string key = "";
+                //std::string skey = "";
 
                 //for (auto& param: doc.value().get_object()) {
                 for (auto [key, value] : doc.value().get_object()) {
@@ -342,7 +342,9 @@ namespace whz {
                             break;
                         case ConfigParameter::LOG_INFO:
                             if (!value.is_null() && value.is_bool()) {
-                                log_info = value.get_bool();
+                                //log_info = value.get_bool();
+                                log_info = bool(value);
+                                std::cout << "LOG_INFO value from file: " << bool(value) << " and now the std::any: " << std::any_cast<bool>(log_info) << std::endl;
                             }
                             else {
                                 log_info = false;

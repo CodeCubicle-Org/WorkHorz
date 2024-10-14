@@ -12,6 +12,7 @@
 #include "whz_config.hpp"
 //#include "whz_templating.hpp"
 #include "whz_vcard.hpp"
+#include "whz_utils.hpp"
 
 #define WHZ_VERSION "0.0.1"
 
@@ -59,7 +60,7 @@ auto main(int argc, char **argv) -> int {
     }
 
     whz::whz_qlogger qlogger;
-    qlogger.error("Error reading configuration file");
+    qlogger.info("My first logging message ma! :D");
     std::cout << "After 1st logging call..." << std::endl;
 
     std::filesystem::path path{"/tmp/whz"};
@@ -122,9 +123,10 @@ auto main(int argc, char **argv) -> int {
 
     // File encryption
     // Note: Replace `publicKey` with an actual generated public key in production use
+    std::cout << "Encrypting file with public key..." << "\n";
     std::vector<unsigned char> publicKey2(crypto_box_PUBLICKEYBYTES);
     randombytes_buf(publicKey2.data(), publicKey2.size());
-    secureUtils.encryptFile("example.txt", publicKey2);
+    secureUtils.encryptFile("whz_config.json", publicKey2);
 
     // Signed message creation and verification
     std::string message = "This is a secure message.";
@@ -142,15 +144,15 @@ auto main(int argc, char **argv) -> int {
     qlogger.info("Test File Compression");
     std::cout << "Test File Compression" << "\n";
     whz::whz_datacompression dchandler;
-    std::vector<fs::path> files = {"example1.txt", "example2.txt"};
+    std::vector<fs::path> files = {"Baudelaire_pg36287.txt", "Home-Iliad_pg6130.txtt"};
     dchandler.compress(files, "zipped_output.zip", ".zip");
     dchandler.compress(files, "7zipped_output.7z", ".7z");
     dchandler.decompress("zipped_output.zip", "zip_output_dir");
     dchandler.decompress("7zipped_output.zip", "7z_output_dir");
 
     // Compress and decompress a directory recursively
-    dchandler.compressDirectory("compress_example_dir", "zipped_output_dir.zip", ".zip");
-    dchandler.compressDirectory("compress_example_dir", "7zipped_output_dir.7z", ".7z");
+    dchandler.compressDirectory("external", "zipped_output_dir.zip", ".zip");
+    dchandler.compressDirectory("external", "7zipped_output_dir.7z", ".7z");
     dchandler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
     dchandler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
     // --------------------------------------------------------------------------------
@@ -205,11 +207,20 @@ auto main(int argc, char **argv) -> int {
     std::cout << "VCard version 4 (RFC6350):\n-------------------------\n" << vcardString << "-------------------------";
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the Utils
+    std::string test_str = "Hello, \x01\x02\x03 world! \u3053\u3093\u306b\u3061\u306f";
+    std::cout << "Testing Utils\nUnsanitized string: " << test_str << "\n";
+    std::string sanitized_str = whz::sanitize_utf8_string(test_str);
+    std::cout << "Sanitized same string: " << sanitized_str << "\n";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
 
 
     qlogger.info("*** Starting WHZ Listening Server ***");
-    std::cout << "\"*** Starting WHZ Listening Server ***" << std::endl;
+    std::cout << "*** Starting WHZ Listening Server ***" << std::endl;
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
+    std::cout << "-   press Ctrl-C to terminate the server   -" << std::endl;
 
     s.listen_and_serve();
     std::cout << std::endl;
