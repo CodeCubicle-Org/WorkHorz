@@ -94,6 +94,10 @@
     {
       "name": "nayuki-qr-code-generator",
       "platform": "(linux & x64)"
+    },
+    {
+      "name": "libpng",
+      "platform": "(linux & x64)"
     }
   ]
 }

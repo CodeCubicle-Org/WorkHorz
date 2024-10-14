@@ -27,6 +27,7 @@ find_package(libzip CONFIG REQUIRED)
 find_package(liblzma CONFIG REQUIRED)
 find_package(SQLiteCpp REQUIRED)
 find_package(unofficial-nayuki-qr-code-generator CONFIG REQUIRED)
+find_package(libpng CONFIG REQUIRED)
 
 find_path(QUILL_INCLUDE_DIRS "quill/Backend.h" "quill/Frontend.h" "quill/LogMacros.h" "quill/whz_logger.h" "quill/sinks/ConsoleSink.h")
 
@@ -55,6 +56,7 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_template_parser.cpp
                src/whz_datacompression.cpp
                src/whz_vcard.cpp
+               src/whz_qrcode_generator.cpp
                #src/whz_templating.cpp
 )
 
@@ -92,6 +94,7 @@ target_link_libraries(whz-core PRIVATE
   liblzma::liblzma
   SQLiteCpp
   unofficial::nayuki-qr-code-generator::nayuki-qr-code-generator
+  libpng
 )
 
 if (BUILD_TESTING)

@@ -13,6 +13,7 @@
 //#include "whz_templating.hpp"
 #include "whz_vcard.hpp"
 #include "whz_utils.hpp"
+#include "whz_qrcode_generator.hpp"
 
 #define WHZ_VERSION "0.0.1"
 
@@ -213,6 +214,38 @@ auto main(int argc, char **argv) -> int {
     std::cout << "Testing Utils\nUnsanitized string: " << test_str << "\n";
     std::string sanitized_str = whz::sanitize_utf8_string(test_str);
     std::cout << "Sanitized same string: " << sanitized_str << "\n";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the QR Code Generator
+    std::cout << "Testing QR Code Generator" << "\n";
+    whz_qrcode_generator generator;
+    whz_qrcode_generator::QRCodeParams params;
+    params.scale = 8;
+    params.border = 2;
+    params.foregroundColor = "#0000FF";
+    params.backgroundColor = "#FFFFFF";
+    params.errorCorrectionLevel = qrcodegen::QrCode::Ecc::MEDIUM;
+
+    std::u8string vCard = u8"BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nORG:Example Corp\nTEL:+123456789\nEMAIL:john.doe@example.com\nEND:VCARD";
+
+    // Generate SVG file
+    if (!generator.generateQRCode(vCard, "qrcode.svg", "svg", params)) {
+        std::cerr << "Failed to generate SVG QR Code." << std::endl;
+    }
+
+    // Generate PNG file
+    if (!generator.generateQRCode(vCard, "qrcode.png", "png", params)) {
+        std::cerr << "Failed to generate PNG QR Code." << std::endl;
+    }
+
+    // Generate Base64 encoded PNG
+    std::string base64Png = generator.generateBase64Bitmap(vCard, params);
+    if (base64Png.empty()) {
+        std::cerr << "Failed to generate Base64 PNG QR Code." << std::endl;
+    } else {
+        //std::cout << "Base64 PNG: " << base64Png << std::endl;
+    }
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
 
