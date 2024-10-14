@@ -196,6 +196,9 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
+    /// Testing the VCard
+    std::cout << "Testing VCard" << "\n";
+    qlogger.info("Testing VCard");
     whz_vcard vcard;
     vcard.addProperty("FN", "Johann Döttinger");
     vcard.addProperty("N", "Döttinger;Johann;;;");
@@ -210,6 +213,8 @@ auto main(int argc, char **argv) -> int {
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
     /// Testing the Utils
+    std::cout << "Testing Utils" << "\n";
+    qlogger.info("Testing Utils");
     std::string test_str = "Hello, \x01\x02\x03 world! \u3053\u3093\u306b\u3061\u306f";
     std::cout << "Testing Utils\nUnsanitized string: " << test_str << "\n";
     std::string sanitized_str = whz::sanitize_utf8_string(test_str);
@@ -219,6 +224,7 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     /// Testing the QR Code Generator
     std::cout << "Testing QR Code Generator" << "\n";
+    qlogger.info("Testing QR Code Generator");
     whz_qrcode_generator generator;
     whz_qrcode_generator::QRCodeParams params;
     params.scale = 8;
@@ -232,17 +238,19 @@ auto main(int argc, char **argv) -> int {
     // Generate SVG file
     if (!generator.generateQRCode(vCard, "qrcode.svg", "svg", params)) {
         std::cerr << "Failed to generate SVG QR Code." << std::endl;
+        qlogger.error("Failed to generate SVG QR Code.");
     }
 
     // Generate PNG file
-    if (!generator.generateQRCode(vCard, "qrcode.png", "png", params)) {
-        std::cerr << "Failed to generate PNG QR Code." << std::endl;
-    }
+//    if (!generator.generateQRCode(vCard, "qrcode.png", "png", params)) {
+//        std::cerr << "Failed to generate PNG QR Code." << std::endl;
+//    }
 
     // Generate Base64 encoded PNG
     std::string base64Png = generator.generateBase64Bitmap(vCard, params);
     if (base64Png.empty()) {
         std::cerr << "Failed to generate Base64 PNG QR Code." << std::endl;
+        qlogger.error("Failed to generate Base64 PNG QR Code.");
     } else {
         //std::cout << "Base64 PNG: " << base64Png << std::endl;
     }
