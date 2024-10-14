@@ -145,7 +145,7 @@ auto main(int argc, char **argv) -> int {
     qlogger.info("Test File Compression");
     std::cout << "Test File Compression" << "\n";
     whz::whz_datacompression dchandler;
-    std::vector<fs::path> files = {"Baudelaire_pg36287.txt", "Home-Iliad_pg6130.txtt"};
+    std::vector<fs::path> files = {"Baudelaire_pg36287.txt", "Homer-Iliad_pg6130.txt"};
     dchandler.compress(files, "zipped_output.zip", ".zip");
     dchandler.compress(files, "7zipped_output.7z", ".7z");
     dchandler.decompress("zipped_output.zip", "zip_output_dir");
