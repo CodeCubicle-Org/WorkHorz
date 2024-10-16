@@ -5,6 +5,9 @@
 #include "whz_templating.hpp"
 
 namespace whz {
+// FIXME
+    std::vector<std::string> TemplateDefiner::GetTemplateVariables(const std::string& template_file) { std::terminate(); }
+    std::string TemplateDefiner::GetSQLForVariable(const std::string& variable_name) { std::terminate(); }
 
     std::expected<TemplateProcessor, std::string> TemplateProcessor::Create(const std::string& db_path) {
         try {
@@ -89,7 +92,8 @@ namespace whz {
         auto data = *data_exp;
 
         try {
-            return bustache::render_string(format, data);
+            return std::unexpected("FIXME");
+            // FIXME: return bustache::render_string(format, data, nullptr);
         } catch (const std::exception& e) {
             return std::unexpected("Template rendering failed: " + std::string(e.what()));
         }

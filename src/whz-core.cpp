@@ -10,7 +10,7 @@
 #include "whz_encryption.hpp"
 #include "whz_datacompression.hpp"
 #include "whz_config.hpp"
-//#include "whz_templating.hpp"
+#include "whz_templating.hpp"
 #include "whz_vcard.hpp"
 #include "whz_utils.hpp"
 #include "whz_qrcode_generator.hpp"
@@ -175,7 +175,7 @@ auto main(int argc, char **argv) -> int {
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
     /// Testing the TemplateProcessor
-    /*auto processor_exp = TemplateProcessor::Create("database.db");
+    auto processor_exp = TemplateProcessor::Create("database.db");
     if (!processor_exp) {
         std::cerr << "Error: " << processor_exp.error() << std::endl;
         return 1;
@@ -192,7 +192,7 @@ auto main(int argc, char **argv) -> int {
         std::cout << "Rendered Template:\n" << *result << std::endl;
     } else {
         std::cerr << "Error: " << result.error() << std::endl;
-    }*/
+    }
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
     // --------------------------------------------------------------------------------

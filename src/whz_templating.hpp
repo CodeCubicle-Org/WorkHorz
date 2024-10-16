@@ -38,19 +38,7 @@ namespace whz {
     };
 
 // Implementing the Bustache Model Traits for DataContext
-    namespace bustache {
-        template<>
-        struct impl_object<DataContext> {
-            static void get(DataContext const& self, std::string const& key, value_handler visit) {
-                auto it = self.data.find(key);
-                if (it != self.data.end()) {
-                    visit(it->second);
-                } else {
-                    visit(nullptr); // Indicate that the key was not found
-                }
-            }
-        };
-    }
+
 
 // TemplateProcessor class
     class TemplateProcessor {
@@ -78,7 +66,20 @@ namespace whz {
         // Helper functions
         [[nodiscard]] std::expected<std::string, std::string> ReadTemplateFile(const std::string& template_file);
         [[nodiscard]] std::expected<bustache::format, std::string> CompileTemplate(const std::string& template_content);
+        // FIXME
         [[nodiscard]] std::expected<DataContext, std::string> FetchData(const std::string& template_file);
     };
 
 } // whz
+
+template<>
+struct bustache::impl_object<whz::DataContext> {
+    static void get(whz::DataContext const& self, std::string const& key, value_handler visit) {
+        auto it = self.data.find(key);
+        if (it != self.data.end()) {
+            visit(&it->second);
+        } else {
+            visit(nullptr); // Indicate that the key was not found
+        }
+    }
+};

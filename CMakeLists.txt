@@ -58,7 +58,7 @@ add_executable(whz-core src/whz-core.cpp
                src/whz_datacompression.cpp
                src/whz_vcard.cpp
                src/whz_qrcode_generator.cpp
-               #src/whz_templating.cpp
+               src/whz_templating.cpp
 )
 
 # set_property(TARGET whz-core PROPERTY CXX_STANDARD 23)
