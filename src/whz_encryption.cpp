@@ -2,11 +2,16 @@
 // Created by Pat Le Cat on 04/10/2024.
 //
 
+#include <array>
+#include <format>
+#include <random>
+#include "fmt/core.h"
 #include "whz_encryption.hpp"
+#include "whz_utils.hpp"
 
 namespace whz {
 
-    void whz_encryption::generateKeyPair(std::vector<unsigned char>&publicKey, std::vector<unsigned char>&secretKey) {
+    void whz_encryption::generateKeyPair(std::vector<unsigned char>& publicKey, std::vector<unsigned char>& secretKey) {
         publicKey.resize(crypto_box_PUBLICKEYBYTES);
         secretKey.resize(crypto_box_SECRETKEYBYTES);
         if (crypto_box_keypair(publicKey.data(), secretKey.data()) != 0) {
@@ -43,7 +48,8 @@ namespace whz {
         }
     }
 
-    bool whz_encryption::validateKeyPair(const std::vector<unsigned char>&publicKey, const std::vector<unsigned char>&secretKey) {
+    bool whz_encryption::validateKeyPair(const std::vector<unsigned char>& publicKey,
+                                         const std::vector<unsigned char>& secretKey) {
         std::vector<unsigned char> test_message(crypto_box_SEALBYTES);
         randombytes_buf(test_message.data(), test_message.size());
 
@@ -55,7 +61,8 @@ namespace whz {
         }
 
         std::vector<unsigned char> decrypted(test_message.size());
-        if (crypto_box_seal_open(decrypted.data(), ciphertext.data(), ciphertext.size(), publicKey.data(), secretKey.data()) != 0) {
+        if (crypto_box_seal_open(decrypted.data(), ciphertext.data(), ciphertext.size(), publicKey.data(),
+                                 secretKey.data()) != 0) {
             this->_qlogger.error("Error: Failed during key validation decryption.");
             std::cerr << "Error: Failed during key validation decryption." << std::endl;
             return false;
@@ -64,8 +71,9 @@ namespace whz {
         return true;
     }
 
-    void whz_encryption::decryptFile(const std::string&encryptedFilePath, const std::vector<unsigned char>&secretKey) {
-        unsigned char  publicKey[crypto_box_PUBLICKEYBYTES]; // TODO: has to be removed and fixed, but how?
+    void
+    whz_encryption::decryptFile(const std::string& encryptedFilePath, const std::vector<unsigned char>& secretKey) {
+        unsigned char publicKey[crypto_box_PUBLICKEYBYTES]; // TODO: has to be removed and fixed, but how?
         std::ifstream encryptedFile(encryptedFilePath, std::ios::binary);
         if (!encryptedFile) {
             this->_qlogger.error("Error: Failed to open encrypted file.");
@@ -86,7 +94,8 @@ namespace whz {
         }
 
         std::vector<unsigned char> plaintext(ciphertext.size() - crypto_box_SEALBYTES);
-        if (crypto_box_seal_open(plaintext.data(), ciphertext.data(), ciphertext.size(), publicKey, secretKey.data()) != 0) {
+        if (crypto_box_seal_open(plaintext.data(), ciphertext.data(), ciphertext.size(), publicKey, secretKey.data()) !=
+            0) {
             this->_qlogger.error("Error: Failed to decrypt file.");
             //LOG_ERROR(whz_logger, "Error: Failed to decrypt file.");
             std::cerr << "Error: Failed to decrypt file." << std::endl;
@@ -98,7 +107,7 @@ namespace whz {
         decryptedFile.write(reinterpret_cast<char *>(plaintext.data()), plaintext.size());
     }
 
-    std::string whz_encryption::hashPassword(const std::string&password) {
+    std::string whz_encryption::hashPassword(const std::string& password) {
         std::vector<unsigned char> hashed_password(crypto_pwhash_STRBYTES);
         if (crypto_pwhash_str(reinterpret_cast<char *>(hashed_password.data()), password.c_str(), password.length(),
                               crypto_pwhash_OPSLIMIT_MODERATE, crypto_pwhash_MEMLIMIT_MODERATE) != 0) {
@@ -109,18 +118,42 @@ namespace whz {
         return std::string(hashed_password.begin(), hashed_password.end());
     }
 
-    bool whz_encryption::verifyPassword(const std::string&hashed_password, const std::string&password) {
+    bool whz_encryption::verifyPassword(const std::string& hashed_password, const std::string& password) {
         return crypto_pwhash_str_verify(hashed_password.c_str(), password.c_str(), password.length()) == 0;
     }
 
+    /**
+     * @brief Creates a 64bit CSRF token
+     * Creates a 64bit CSRF token using a secure random number generator using the very fast mersenne twister.
+     *
+     * @return A CSRF token string with a length of 64 characters.
+     */
     std::string whz_encryption::createCSRFToken() {
-        std::vector<unsigned char> token(crypto_generichash_BYTES);
-        randombytes_buf(token.data(), token.size());
-        return std::string(token.begin(), token.end());
+        // Define the size of the token
+        constexpr size_t token_size = 32;
+
+        // Create a secure random number generator
+        std::random_device rd;
+        std::mt19937_64 gen(rd()); // Use Mersenne Twister 64-bit with random seed
+        std::uniform_int_distribution<unsigned char> dist(0, 255);
+
+        // Generate random bytes
+        std::array<unsigned char, token_size> random_bytes;
+        for (auto& byte: random_bytes) {
+            byte = dist(gen);
+        }
+
+        // Convert to a hexadecimal string
+        std::string token;
+        for (const auto& byte: random_bytes) {
+            token += fmt::format("{:02x}", byte);
+        }
+
+        return token;
     }
 
 
-    void whz_encryption::encryptFile(const std::string&filePath, const std::vector<unsigned char>&publicKey) {
+    void whz_encryption::encryptFile(const std::string& filePath, const std::vector<unsigned char>& publicKey) {
         std::ifstream file(filePath, std::ios::binary);
         if (!file) {
             this->_qlogger.error("Error: Failed to open file.");
@@ -144,7 +177,7 @@ namespace whz {
     }
 
     std::vector<unsigned char>
-    whz_encryption::createSignedMessage(const std::string&message, const std::vector<unsigned char>&secretKey) {
+    whz_encryption::createSignedMessage(const std::string& message, const std::vector<unsigned char>& secretKey) {
         std::vector<unsigned char> signed_message(message.size() + crypto_sign_BYTES);
         crypto_sign(signed_message.data(), nullptr,
                     reinterpret_cast<const unsigned char *>(message.data()), message.size(),
@@ -152,8 +185,8 @@ namespace whz {
         return signed_message;
     }
 
-    std::string whz_encryption::verifySignedMessage(const std::vector<unsigned char>&signed_message,
-                                    const std::vector<unsigned char>&publicKey) {
+    std::string whz_encryption::verifySignedMessage(const std::vector<unsigned char>& signed_message,
+                                                    const std::vector<unsigned char>& publicKey) {
         std::vector<unsigned char> message(signed_message.size());
         unsigned long long message_len;
         if (crypto_sign_open(message.data(), &message_len, signed_message.data(), signed_message.size(),

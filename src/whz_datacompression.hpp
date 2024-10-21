@@ -11,6 +11,8 @@
 #include <fstream>
 #include <zip.h>
 #include <lzma.h>
+#include <archive.h>
+#include <archive_entry.h>
 #include "whz_quill_wrapper.hpp"
 
 namespace whz {
@@ -22,20 +24,28 @@ namespace whz {
         whz_datacompression() = default;
         ~whz_datacompression() = default;
 
-        bool compress(const std::vector<fs::path>& files, const fs::path& output, const std::string& format) {
+        /**
+         * @brief Compresses a list of files into an archive
+         * @param files List of files to compress
+         * @param output Path to the output archive
+         * @param format Archive format ("zip" or "7z")
+         * @param compressionLevel Compression level (0-9), default is 6
+         * @return True if the compression was successful, false otherwise
+         */
+        bool compress(const std::vector<fs::path>& files, const fs::path& output, const std::string& format, int compressionLevel = 6) {
             bool bRet = false;
 
             // check if the path exists
             if (!fs::exists(output.parent_path())) {
                 this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", output.parent_path().string()));
                 //throw std::runtime_error("Output directory does not exist");
-                return false;
+                //return false;
             }
 
-            if (format == ".zip") {
-                bRet = compressZip(files, output);
-            } else if (format == ".7z") {
-                bRet = compress7z(files, output);
+            if (format == "zip") {
+                bRet = compressZip(files, output, compressionLevel);
+            } else if (format == "7z") {
+                bRet = compress7z(files, output, compressionLevel);
             } else {
                 this->qlogger.error("Compression Error: Unsupported file format. Use only .zip or .7z");
                 return false;
@@ -46,9 +56,9 @@ namespace whz {
         bool decompress(const fs::path& archive, const fs::path& outputDir) {
             bool bRet = false;
 
-            // check if the path exists
-            if (!fs::exists(outputDir.parent_path())) {
-                this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", outputDir.parent_path().string()));
+            // check if the archive file exists
+            if (!fs::exists(archive)) {
+                this->qlogger.error(fmt::format("Compression Error: Output directory does not exist: {}", archive.string()));
                 return false;
             }
 
@@ -88,7 +98,14 @@ namespace whz {
         }
 
     private:
-        bool compressZip(const std::vector<fs::path>& files, const fs::path& output) {
+        /**
+         * @brief Compresses files into a ZIP archive
+         * @param files List of files to compress
+         * @param output Path to the output ZIP archive
+         * @param compressionLevel Compression level (0-9)
+         * @return True if the compression was successful, false otherwise
+         */
+        bool compressZip(const std::vector<fs::path>& files, const fs::path& output, int compressionLevel = 6) {
             int error;
             zip_t* archive = zip_open(output.string().c_str(), ZIP_CREATE | ZIP_TRUNCATE, &error);
             if (!archive) {
@@ -105,6 +122,11 @@ namespace whz {
                         this->qlogger.error("Compression Error: Failed to add file to ZIP archive");
                         return false;
                     }
+                    // Set the compression level for the file
+                    if (zip_set_file_compression(archive, zip_name_locate(archive, file.filename().string().c_str(), 0), ZIP_CM_DEFLATE, compressionLevel) < 0) {
+                        this->qlogger.error("Compression Error: Failed to set compression level");
+                        return false;
+                    }
                 }
             }
             zip_close(archive);
@@ -112,7 +134,7 @@ namespace whz {
         }
 
         bool decompressZip(const fs::path& archive, const fs::path& outputDir) {
-            int error;
+            int error = 0;
             zip_t* za = zip_open(archive.string().c_str(), 0, &error);
             if (!za) {
                 this->qlogger.error(fmt::format("Decompression Error({}): Failed to open ZIP archive", error));
@@ -146,92 +168,105 @@ namespace whz {
             return true;
         }
 
-        bool compress7z(const std::vector<fs::path>& files, const fs::path& output) {
-            lzma_stream strm = LZMA_STREAM_INIT;
-            if (lzma_easy_encoder(&strm, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC64) != LZMA_OK) {
-                this->qlogger.error("Compression Error: Failed to initialize LZMA encoder");
-                return false;
-            }
+        /**
+         * @brief Compresses files into a 7z archive
+         * @param files List of files to compress
+         * @param output Path to the output 7z archive
+         * @param compressionLevel Compression levels: 0 - 9 or LZMA_PRESET_DEFAULT=6
+         * @return True if the compression was successful, false otherwise
+         */
+        bool compress7z(const std::vector<fs::path>& files, const fs::path& output, uint32_t compressionLevel = 6) {
+            struct archive* a;
+            struct archive_entry* entry;
+            char buff[8192];
+            int len;
+            std::ifstream ifs;
 
-            std::ofstream ofs(output, std::ios::binary);
-            if (!ofs) {
-                lzma_end(&strm);
-                this->qlogger.error(fmt::format("Compression Error: Failed to open output file: {}", output.string()));
+            a = archive_write_new();
+            archive_write_set_format_7zip(a);
+            archive_write_add_filter_lzma(a);
+            archive_write_set_options(a, ("compression-level=" + std::to_string(compressionLevel)).c_str());
+
+            if (archive_write_open_filename(a, output.string().c_str()) != ARCHIVE_OK) {
+                this->qlogger.error("Compression Error: Failed to open output file");
                 return false;
             }
 
             for (const auto& file : files) {
                 if (fs::is_regular_file(file)) {
-                    std::ifstream ifs(file, std::ios::binary);
-                    if (!ifs) {
-                        lzma_end(&strm);
-                        this->qlogger.error("Compression Error: Failed to open input file");
-                        return false;
+                    entry = archive_entry_new();
+                    archive_entry_set_pathname(entry, file.string().c_str());
+                    archive_entry_set_size(entry, fs::file_size(file));
+                    archive_entry_set_filetype(entry, AE_IFREG);
+                    archive_entry_set_perm(entry, 0644);
+                    archive_write_header(a, entry);
+
+                    ifs.open(file, std::ios::binary);
+                    while ((len = ifs.readsome(buff, sizeof(buff))) > 0) {
+                        archive_write_data(a, buff, len);
                     }
-
-                    char buffer[8192];
-                    while (ifs.read(buffer, sizeof(buffer)) || ifs.gcount() > 0) {
-                        strm.next_in = reinterpret_cast<const uint8_t*>(buffer);
-                        strm.avail_in = ifs.gcount();
-
-                        while (strm.avail_in > 0) {
-                            char outbuf[8192];
-                            strm.next_out = reinterpret_cast<uint8_t*>(outbuf);
-                            strm.avail_out = sizeof(outbuf);
-
-                            lzma_ret ret = lzma_code(&strm, LZMA_RUN);
-                            if (ret != LZMA_OK && ret != LZMA_STREAM_END) {
-                                lzma_end(&strm);
-                                this->qlogger.error("Compression Error: LZMA compression error");
-                                return false;
-                            }
-
-                            ofs.write(outbuf, sizeof(outbuf) - strm.avail_out);
-                        }
-                    }
+                    ifs.close();
+                    archive_entry_free(entry);
                 }
             }
-            lzma_end(&strm);
+
+            archive_write_close(a);
+            archive_write_free(a);
             return true;
         }
 
         bool decompress7z(const fs::path& archive, const fs::path& outputDir) {
-            lzma_stream strm = LZMA_STREAM_INIT;
-            if (lzma_auto_decoder(&strm, UINT64_MAX, 0) != LZMA_OK) {
-                this->qlogger.error("Decompression Error: Failed to initialize LZMA decoder");
+            struct archive* a;
+            struct archive* ext;
+            struct archive_entry* entry;
+            int r;
+
+            a = archive_read_new();
+            archive_read_support_format_7zip(a);
+            archive_read_support_filter_all(a);
+
+            ext = archive_write_disk_new();
+            archive_write_disk_set_options(ext, ARCHIVE_EXTRACT_TIME);
+            archive_write_disk_set_standard_lookup(ext);
+
+            if ((r = archive_read_open_filename(a, archive.string().c_str(), 10240))) {
+                this->qlogger.error(fmt::format("Decompression Error: Failed to open 7z archive: {}", archive.string()));
+                archive_read_free(a);
+                archive_write_free(ext);
                 return false;
             }
 
-            std::ifstream ifs(archive, std::ios::binary);
-            if (!ifs) {
-                lzma_end(&strm);
-                this->qlogger.error("Decompression Error: Failed to open input archive");
-                return false;
-            }
+            while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+                const char* currentFile = archive_entry_pathname(entry);
+                fs::path fullOutputPath = outputDir / currentFile;
+                archive_entry_set_pathname(entry, fullOutputPath.string().c_str());
 
-            fs::create_directories(outputDir);
-            std::ofstream ofs(outputDir / archive.stem(), std::ios::binary);
+                r = archive_write_header(ext, entry);
+                if (r != ARCHIVE_OK) {
+                    this->qlogger.error(fmt::format("Decompression Error: Failed to write header for file: {}", currentFile));
+                } else {
+                    const void* buff;
+                    size_t size;
+                    la_int64_t offset;
 
-            char buffer[8192];
-            while (ifs.read(buffer, sizeof(buffer)) || ifs.gcount() > 0) {
-                strm.next_in = reinterpret_cast<const uint8_t*>(buffer);
-                strm.avail_in = ifs.gcount();
-
-                while (strm.avail_in > 0) {
-                    char outbuf[8192];
-                    strm.next_out = reinterpret_cast<uint8_t*>(outbuf);
-                    strm.avail_out = sizeof(outbuf);
-
-                    lzma_ret ret = lzma_code(&strm, LZMA_RUN);
-                    if (ret != LZMA_OK && ret != LZMA_STREAM_END) {
-                        lzma_end(&strm);
-                        this->qlogger.error("Decompression Error: LZMA decompression error");
-                        return false;
+                    while ((r = archive_read_data_block(a, &buff, &size, &offset)) == ARCHIVE_OK) {
+                        r = archive_write_data_block(ext, buff, size, offset);
+                        if (r != ARCHIVE_OK) {
+                            this->qlogger.error(fmt::format("Decompression Error: Failed to write data for file: {}", currentFile));
+                            break;
+                        }
                     }
-                    ofs.write(outbuf, sizeof(outbuf) - strm.avail_out);
+                    if (r != ARCHIVE_EOF) {
+                        this->qlogger.error(fmt::format("Decompression Error: Failed to read data for file: {}", currentFile));
+                    }
                 }
+                archive_write_finish_entry(ext);
             }
-            lzma_end(&strm);
+
+            archive_read_close(a);
+            archive_read_free(a);
+            archive_write_close(ext);
+            archive_write_free(ext);
             return true;
         }
 

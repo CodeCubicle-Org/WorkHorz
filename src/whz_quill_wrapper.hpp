@@ -4,7 +4,7 @@
 //#include "quill/Frontend.h"
 //#include "quill/LogMacros.h"
 #include "fmt/format.h"
-#include "quill/logger.h"
+#include "quill/Logger.h"
 
 
 //#include "quill/sinks/ConsoleSink.h"

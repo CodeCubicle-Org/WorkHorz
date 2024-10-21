@@ -10,6 +10,10 @@
 #include "whz_encryption.hpp"
 #include "whz_datacompression.hpp"
 #include "whz_config.hpp"
+#include "whz_templating.hpp"
+#include "whz_vcard.hpp"
+#include "whz_utils.hpp"
+#include "whz_qrcode_generator.hpp"
 
 #define WHZ_VERSION "0.0.1"
 
@@ -57,7 +61,7 @@ auto main(int argc, char **argv) -> int {
     }
 
     whz::whz_qlogger qlogger;
-    qlogger.error("Error reading configuration file");
+    qlogger.info("My first logging message ma! :D");
     std::cout << "After 1st logging call..." << std::endl;
 
     std::filesystem::path path{"/tmp/whz"};
@@ -120,9 +124,10 @@ auto main(int argc, char **argv) -> int {
 
     // File encryption
     // Note: Replace `publicKey` with an actual generated public key in production use
+    std::cout << "Encrypting file with public key..." << "\n";
     std::vector<unsigned char> publicKey2(crypto_box_PUBLICKEYBYTES);
     randombytes_buf(publicKey2.data(), publicKey2.size());
-    secureUtils.encryptFile("example.txt", publicKey2);
+    secureUtils.encryptFile("whz_config.json", publicKey2);
 
     // Signed message creation and verification
     std::string message = "This is a secure message.";
@@ -140,23 +145,24 @@ auto main(int argc, char **argv) -> int {
     qlogger.info("Test File Compression");
     std::cout << "Test File Compression" << "\n";
     whz::whz_datacompression dchandler;
-    std::vector<fs::path> files = {"example1.txt", "example2.txt"};
-    dchandler.compress(files, "zipped_output.zip", ".zip");
-    dchandler.compress(files, "7zipped_output.7z", ".7z");
+    std::vector<fs::path> files = {"Baudelaire_pg36287.txt", "Homer-Iliad_pg6130.txt"};
+    dchandler.compress(files, "zipped_output.zip", "zip", 9);
+    dchandler.compress(files, "7zipped_output.7z", "7z", 9);
     dchandler.decompress("zipped_output.zip", "zip_output_dir");
-    dchandler.decompress("7zipped_output.zip", "7z_output_dir");
+    dchandler.decompress("example-archive.7z", "7z_output_dir");
 
     // Compress and decompress a directory recursively
-    dchandler.compressDirectory("compress_example_dir", "zipped_output_dir.zip", ".zip");
-    dchandler.compressDirectory("compress_example_dir", "7zipped_output_dir.7z", ".7z");
+    dchandler.compressDirectory("external", "zipped_output_dir.zip", ".zip");
+    dchandler.compressDirectory("external", "7zipped_output_dir.7z", ".7z");
     dchandler.decompressToDirectory("zipped_output_dir.zip", "zip_output_dir_unzipped");
     dchandler.decompressToDirectory("7zipped_output_dir.zip", "7zip_output_dir_unzipped");
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
     /// Writing out the latest configuration parameters to a JSON file
+    /*
     if (whz::Config::get_instance().is_config_loaded()) {
-        bool bRet = whz::Config::get_instance().createJSON_config("whz_config.json");  // Create in same folder as executable
+        bool bRet = whz::Config::get_instance().createJSON_config("whz_config2.json");  // Create in same folder as executable
         if (bRet) {
             qlogger.info("Configuration written to JSON file.");
             std::cout << "Configuration written to JSON file.\n";
@@ -164,15 +170,98 @@ auto main(int argc, char **argv) -> int {
             qlogger.error("Error writing configuration to JSON file.");
             std::cerr << "Error writing configuration to JSON file.\n";
         }
+    }*/
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the TemplateProcessor
+    auto processor_exp = TemplateProcessor::Create("database.db");
+    if (!processor_exp) {
+        std::cerr << "Error: " << processor_exp.error() << std::endl;
+        return 1;
+    }
+    auto processor = std::move(*processor_exp);
+
+    // Set the TemplateDefiner instance
+    auto template_definer = std::make_shared<TemplateDefiner>();
+    processor.SetTemplateDefiner(template_definer);
+
+    // Process the template
+    auto result = processor.ProcessTemplate("template.whzt");
+    if (result) {
+        std::cout << "Rendered Template:\n" << *result << std::endl;
+    } else {
+        std::cerr << "Error: " << result.error() << std::endl;
+    }
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the VCard
+    std::cout << "Testing VCard" << "\n";
+    qlogger.info("Testing VCard");
+    whz_vcard vcard;
+    vcard.addProperty("FN", "Johann Döttinger");
+    vcard.addProperty("N", "Döttinger;Johann;;;");
+    vcard.addProperty("EMAIL", { { "TYPE", "Work" } }, "johann.doettinger@example.com");
+    vcard.addProperty("TEL", { { "TYPE", "Mobile" } }, "+4179456987");
+    vcard.addAddress({ { "TYPE", "Home" } }, { "", "", "Strassenweg 11", "Zürich", "ZH", "8000", "Switzerland" });
+    vcard.addRFC6350Field("URL", { { "TYPE", "Work" } }, "https://codecubicle.ch");
+
+    std::string vcardString = vcard.toString();
+    std::cout << "VCard version 4 (RFC6350):\n-------------------------\n" << vcardString << "-------------------------";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the Utils
+    std::cout << "Testing Utils" << "\n";
+    qlogger.info("Testing Utils");
+    std::string test_str = "Hello, \x01\x02\x03 world! \u3053\u3093\u306b\u3061\u306f";
+    std::cout << "Testing Utils\nUnsanitized string: " << test_str << "\n";
+    std::string sanitized_str = whz::sanitize_utf8_string(test_str);
+    std::cout << "Sanitized same string: " << sanitized_str << "\n";
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+    // --------------------------------------------------------------------------------
+    /// Testing the QR Code Generator
+    std::cout << "Testing QR Code Generator" << "\n";
+    qlogger.info("Testing QR Code Generator");
+    whz_qrcode_generator generator;
+    whz_qrcode_generator::QRCodeParams params;
+    params.scale = 8;
+    params.border = 2;
+    params.foregroundColor = "#0000FF";
+    params.backgroundColor = "#FFFFFF";
+    params.errorCorrectionLevel = qrcodegen::QrCode::Ecc::MEDIUM;
+
+    //std::u8string vCard = u8"BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nORG:Example Corp\nTEL:+123456789\nEMAIL:john.doe@example.com\nEND:VCARD";
+
+    // Generate SVG file
+    if (!generator.generateQRCode(stringToU8String(vcardString), "qrcode.svg", "svg", params)) {
+        std::cerr << "Failed to generate SVG QR Code." << std::endl;
+        qlogger.error("Failed to generate SVG QR Code.");
+    }
+
+    // Generate PNG file
+//    if (!generator.generateQRCode(stringToU8String(vcardString), "qrcode.png", "png", params)) {
+//        std::cerr << "Failed to generate PNG QR Code." << std::endl;
+//    }
+
+    // Generate Base64 encoded PNG
+    std::string base64Png = generator.generateBase64Bitmap(stringToU8String(vcardString), params);
+    if (base64Png.empty()) {
+        std::cerr << "Failed to generate Base64 PNG QR Code." << std::endl;
+        qlogger.error("Failed to generate Base64 PNG QR Code.");
+    } else {
+        //std::cout << "Base64 PNG: " << base64Png << std::endl;
     }
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
 
 
-    qlogger.info("Starting WHZ");
-    std::cout << "Starting WHZ" << std::endl;
-    //LOG_INFO(whz_qlogger::getInstance().getLogger(), "Starting WHZ");
+    qlogger.info("*** Starting WHZ Listening Server ***");
+    std::cout << "*** Starting WHZ Listening Server ***" << std::endl;
     whz::server s{"0.0.0.0", 8080, std::move(path), 1};
+    std::cout << "-   press Ctrl-C to terminate the server   -" << std::endl;
 
     s.listen_and_serve();
     std::cout << std::endl;

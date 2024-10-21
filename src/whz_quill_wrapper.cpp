@@ -48,73 +48,128 @@ namespace whz {
     }
 
     void whz_qlogger::trace_L3(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L3).type() == typeid(bool)) {
+            std::cout << "Type of LOG_TRACE_L3 is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L3));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L3))) {
+        if (bLogVal) {
             LOG_TRACE_L3(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::trace_L2(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L2).type() == typeid(bool)) {
+            std::cout << "Type of LOG_TRACE_L2 is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L2));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L2))) {
+        if (bLogVal) {
             LOG_TRACE_L2(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::trace_L1(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L1).type() == typeid(bool)) {
+            std::cout << "Type of LOG_TRACE_L1 is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L1));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_TRACE_L1))) {
+        if (bLogVal) {
             LOG_TRACE_L1(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::debug(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_DEBUG).type() == typeid(bool)) {
+            std::cout << "Type of LOG_DEBUG is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_DEBUG));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_DEBUG))) {
+        if (bLogVal) {
             LOG_DEBUG(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::info(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        std::cout << "Type of LOG_INFO is: " << whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO).type().name() << std::endl;
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO).type() == typeid(bool)) {
+            std::cout << "Type of LOG_INFO is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        bool bLogInfo = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_INFO));
-        if (bLogInfo) {
+        if (bLogVal) {
             LOG_INFO(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::warning(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_WARNING).type() == typeid(bool)) {
+            std::cout << "Type of LOG_WARNING is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_WARNING));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_WARNING))) {
+        if (bLogVal) {
             LOG_WARNING(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::error(const std::string& fmtstr) {
-        // Check if the value from Config is true then log, else do nothing
         bool bLogVal = false;
-        //std::string log_string = std::any_cast<std::string>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
-        //std::cout << whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR).type() << std::endl;
+
         if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR).type() == typeid(bool)) {
             std::cout << "Type of LOG_ERROR is bool" << std::endl;
             bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
         }
-        //bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_ERROR));
+        // Check if the value from Config is true then log, else do nothing
         if (bLogVal) {
             LOG_ERROR(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::critical(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_CRITICAL).type() == typeid(bool)) {
+            std::cout << "Type of LOG_CRITICAL is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_CRITICAL));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_CRITICAL))) {
+        if (bLogVal) {
             LOG_CRITICAL(this->qlogger, "{}", fmtstr);
         }
     }
 
     void whz_qlogger::backtrace(const std::string& fmtstr) {
+        bool bLogVal = false;
+
+        if (whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_BACKTRACE).type() == typeid(bool)) {
+            std::cout << "Type of LOG_BACKTRACE is bool" << std::endl;
+            bLogVal = std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_BACKTRACE));
+            std::cout << "Type of bLogVal is: " << bLogVal << std::endl;
+        }
         // Check if the value from Config is true then log, else do nothing
-        if (std::any_cast<bool>(whz::Config::get_instance().get_config_value(Config::ConfigParameter::LOG_BACKTRACE))) {
+        if (bLogVal) {
             LOG_BACKTRACE(this->qlogger, "{}", fmtstr);
         }
     }
