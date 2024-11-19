@@ -256,7 +256,7 @@ auto main(int argc, char **argv) -> int {
     }
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
-
+    // --------------------------------------------------------------------------------
 
     qlogger.info("*** Starting WHZ Listening Server ***");
     std::cout << "*** Starting WHZ Listening Server ***" << std::endl;
