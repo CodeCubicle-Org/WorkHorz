@@ -1,0 +1,3 @@
+[DEBUG] resolving template from classpath for init/jreleaser.yml.tpl
+[INFO]  Writing file C:\Development\GitHub\WorkHorz\jreleaser\jreleaser.yml
+[INFO]  JReleaser initialized at C:\Development\GitHub\WorkHorz\jreleaser
