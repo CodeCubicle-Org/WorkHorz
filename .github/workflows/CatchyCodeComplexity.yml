@@ -11,6 +11,7 @@ jobs:
   complexity:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: miguelcsx/catchy@v1.0.3
         with:
-          threshold: ${{ github.event.inputs.threshold || '15' }}
+          threshold: ${{ github.event.inputs.threshold }}
