@@ -1,7 +1,12 @@
 name: Code Complexity Check
 on: 
-  - pull_request
-  - workflow_dispatch
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: 'Complexity threshold'
+        required: true
+        default: '15'
 jobs:
   complexity:
     runs-on: ubuntu-latest
