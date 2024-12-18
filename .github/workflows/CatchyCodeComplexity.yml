@@ -1,0 +1,9 @@
+name: Code Complexity Check
+on: [pull_request]
+jobs:
+  complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: miguelcsx/catchy@v1.0.3
+        with:
+          threshold: '15'
