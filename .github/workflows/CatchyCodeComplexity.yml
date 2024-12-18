@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: miguelcsx/catchy@v1.0.3
         with:
-          threshold: '15'
+          threshold: ${{ github.event.inputs.threshold || '15' }}
