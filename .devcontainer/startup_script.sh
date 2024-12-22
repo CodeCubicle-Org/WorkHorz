@@ -7,7 +7,7 @@ trap 'echo "Error occurred at line $LINENO while executing: $BASH_COMMAND"; exit
 echo "Starting the vcpkg startup script..."
 
 # Find the full path to vcpkg
-VCPKG_PATH="/usr/local/vcpkg/vcpkg"
+VCPKG_PATH="/usr/local/vcpkg/"
 
 if [ -z "$VCPKG_PATH" ]; then
   echo "Error: vcpkg is not installed or not in PATH."
