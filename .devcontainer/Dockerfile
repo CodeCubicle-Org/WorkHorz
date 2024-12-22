@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 
 # Update the Ubuntu package list and install necessary packages
-RUN apt-get update && apt-get upgrade -y && \
+RUN apt-get update && apt-get dist-upgrade -y && \
     apt-get install -y \
     autoconf \
     automake \
