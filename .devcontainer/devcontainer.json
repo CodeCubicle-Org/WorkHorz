@@ -10,6 +10,15 @@
 		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {}
 	},
 	"customizations": {
+		"jetbrains": {
+			"settings": {
+				"org.intellij.plugins.markdown:app:MarkdownCodeFoldingSettings.collapseCodeFences": true,
+				"org.intellij.plugins.markdown:app:MarkdownCodeFoldingSettings.collapseTables": true,
+				"com.intellij.database:app:SqlFoldingSettings.collapse_long_numbers": true,
+				"Docker:app:DockerSettings.dockerComposePath": "docker.exe",
+				"Docker:app:DockerSettings.dockerPath": "docker.exe"
+			}
+		},
 		"vscode": {
 			"extensions": [
 					"ms-vscode.cpptools",
