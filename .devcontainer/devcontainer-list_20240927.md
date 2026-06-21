@@ -34,3 +34,17 @@ PNG: libpng-dev
 libzip
 liblzma
 
+
+##December 2025
+-------------
+Component,Previous Target,Dec 2025 Update,Installation Method
+GDB,14.2,15.1 (Latest stable release),Build from Source
+CMake,≥3.28,≥3.30.x (Latest in 24.04 repo),apt package
+Ninja,≥1.11.1,≥1.12 (Latest in 24.04 repo),apt package
+CCache,≥4.9.1,≥4.10 (Latest in 24.04 repo),apt package
+Doxygen,≥1.9.8,≥1.11 (Latest in 24.04 repo),apt package
+CPPCheck,≥2.13,≥2.15 (Latest in 24.04 repo),apt package
+OpenSSL,≥3.0.13,≥3.2 (Latest in 24.04 repo),libssl-dev package
+SQLite,≥3.44,≥3.45 (Latest in 24.04 repo),libsqlite3-dev package
+Autoconf,≥2.71,≥2.72 (Latest in 24.04 repo),apt package
+libicu,≥74.2,≥75.1 (Latest in 24.04 repo),libicu-dev package

@@ -14,10 +14,188 @@
 #include "whz_vcard.hpp"
 #include "whz_utils.hpp"
 #include "whz_qrcode_generator.hpp"
+#include "whz_jira_wrapper.hpp"
 
 #define WHZ_VERSION "0.0.1"
 
 using namespace whz;
+
+
+struct JiraIssue {
+    std::string key;
+    std::string summary;
+    std::string description;
+    std::string status;
+    
+    static JiraIssue from_json(const simdjson::dom::element& json) {
+        JiraIssue issue;
+        issue.key = std::string(json["key"]);
+        issue.summary = std::string(json["fields"]["summary"]);
+        issue.description = std::string(json["fields"]["description"]);
+        issue.status = std::string(json["fields"]["status"]["name"]);
+        return issue;
+    }
+    
+    std::string to_json() const {
+        return fmt::format(R"({{"fields":{{"summary":"{}","description":"{}","project":{{"key":"TEST"}},"issuetype":{{"name":"Task"}}}}})",
+            summary, description);
+    }
+};
+
+void jira_example() {
+    try {
+        // Initialize API
+        whz::JiraAPI::Config config{
+            "jira.example.com",
+            "username",
+            "api-token",
+            443
+        };
+        
+        whz::JiraAPI jira(config);
+
+        // Create new issue
+        JiraIssue new_issue{
+            "", // Key will be assigned by Jira
+            "Test Issue",
+            "This is a test issue created via API",
+            ""  // Status will be set by Jira
+        };
+
+        auto create_future = jira.create_resource<JiraIssue>("/rest/api/2/issue", new_issue);
+        auto created_issue = create_future.get();
+        std::cout << "Created issue: " << created_issue.key << "\n";
+
+        // Get issue
+        auto get_future = jira.get_resource<JiraIssue>("/rest/api/2/issue/" + created_issue.key);
+        auto retrieved_issue = get_future.get();
+        std::cout << "Retrieved issue: " << retrieved_issue.summary << "\n";
+
+        // Search issues
+        auto search_future = jira.search_issues("project = TEST");
+        auto results = search_future.get();
+        
+        // Process search results
+        auto issues = results["issues"];
+        for (auto issue : issues) {
+            auto issue_obj = JiraIssue::from_json(issue);
+            std::cout << fmt::format("Found issue: {} - {}\n", 
+                issue_obj.key, issue_obj.summary);
+        }
+
+        // Update issue
+        retrieved_issue.summary = "Updated Summary";
+        auto update_future = jira.update_resource<JiraIssue>(
+            "/rest/api/2/issue/" + retrieved_issue.key,
+            retrieved_issue
+        );
+        update_future.get();
+
+        // Delete issue
+        auto delete_future = jira.delete_resource("/rest/api/2/issue/" + created_issue.key);
+        if (delete_future.get()) {
+            std::cout << "Issue deleted successfully\n";
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+}
+
+// Example YubiKey verifier usage
+void example_yubikey_usage() {
+    try {
+        // Initialize SSL context
+        boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
+        ssl_ctx.set_default_verify_paths();
+        ssl_ctx.set_verify_mode(boost::asio::ssl::verify_peer);
+        
+        // Initialize IO context
+        boost::asio::io_context io_ctx;
+        
+        // Create YubiKey verifier with your API credentials
+        whz::yubikey_verifier verifier(
+            "12345",                // Your Yubico API client ID
+            "YOUR_API_KEY_HERE",    // Your Yubico API key
+            io_ctx,
+            ssl_ctx
+        );
+        
+        // Example 1: Basic OTP verification
+        {
+            auto future = verifier.verify_otp("ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgf");
+            auto result = future.get();
+            
+            if (result) {
+                if (*result) {
+                    std::cout << "OTP verified successfully!\n";
+                }
+            } else {
+                switch (result.error()) {
+                    case whz::yubikey_verifier::error::replayed_otp:
+                        std::cout << "Error: This OTP has been used before\n";
+                        break;
+                    case whz::yubikey_verifier::error::network_error:
+                        std::cout << "Error: Network communication failed\n";
+                        break;
+                    default:
+                        std::cout << "Error: Verification failed\n";
+                        break;
+                }
+            }
+        }
+        
+        // Example 2: Extract YubiKey identity
+        {
+            auto id_result = whz::yubikey_verifier::extract_identity(
+                "ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgf");
+                
+            if (id_result) {
+                std::cout << "YubiKey ID: " << *id_result << '\n';
+            }
+        }
+        
+        // Example 3: Parallel verification with timeout
+        {
+            auto future = verifier.verify_otp("ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgf");
+            
+            // Wait for max 5 seconds
+            if (future.wait_for(std::chrono::seconds(5)) == std::future_status::timeout) {
+                std::cout << "Error: Verification timed out\n";
+                return;
+            }
+            
+            auto result = future.get();
+            if (result && *result) {
+                std::cout << "OTP verified successfully!\n";
+            }
+        }
+        
+        // Example 4: Multiple verifications in sequence
+        {
+            std::vector<std::string> otps = {
+                "ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgf",
+                "ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgh",
+                "ccccccbetgjevkfirrtbkjkjhkcncdgifcvhfrkkinlgi"
+            };
+            
+            for (const auto& otp : otps) {
+                if (auto id = whz::yubikey_verifier::extract_identity(otp)) {
+                    std::cout << "Processing YubiKey: " << *id << '\n';
+                    
+                    auto future = verifier.verify_otp(otp);
+                    if (auto result = future.get(); result && *result) {
+                        std::cout << "Verified successfully\n";
+                    }
+                }
+            }
+        }
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error in YubiKey example: " << e.what() << '\n';
+    }
+}
+
 
 auto main(int argc, char **argv) -> int {
 
@@ -257,6 +435,68 @@ auto main(int argc, char **argv) -> int {
     // --------------------------------------------------------------------------------
     std::cout << std::endl;
     // --------------------------------------------------------------------------------
+    /// Testing the TemplateProcessor
+    try {
+        // Initialize API
+        whz::JiraAPI::Config config{
+            "jira.example.com",
+            "username",
+            "api-token",
+            443
+        };
+        
+        whz::JiraAPI jira(config);
+
+        // Create new issue
+        JiraIssue new_issue{
+            "", // Key will be assigned by Jira
+            "Test Issue",
+            "This is a test issue created via API",
+            ""  // Status will be set by Jira
+        };
+
+        auto create_future = jira.create_resource<JiraIssue>("/rest/api/2/issue", new_issue);
+        auto created_issue = create_future.get();
+        std::cout << "Created issue: " << created_issue.key << "\n";
+
+        // Get issue
+        auto get_future = jira.get_resource<JiraIssue>("/rest/api/2/issue/" + created_issue.key);
+        auto retrieved_issue = get_future.get();
+        std::cout << "Retrieved issue: " << retrieved_issue.summary << "\n";
+
+        // Search issues
+        auto search_future = jira.search_issues("project = TEST");
+        auto results = search_future.get();
+        
+        // Process search results
+        auto issues = results["issues"];
+        for (auto issue : issues) {
+            auto issue_obj = JiraIssue::from_json(issue);
+            std::cout << fmt::format("Found issue: {} - {}\n", 
+                issue_obj.key, issue_obj.summary);
+        }
+
+        // Update issue
+        retrieved_issue.summary = "Updated Summary";
+        auto update_future = jira.update_resource<JiraIssue>(
+            "/rest/api/2/issue/" + retrieved_issue.key,
+            retrieved_issue
+        );
+        update_future.get();
+
+        // Delete issue
+        auto delete_future = jira.delete_resource("/rest/api/2/issue/" + created_issue.key);
+        if (delete_future.get()) {
+            std::cout << "Issue deleted successfully\n";
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
+
+    // --------------------------------------------------------------------------------
+    std::cout << std::endl;
+
 
     qlogger.info("*** Starting WHZ Listening Server ***");
     std::cout << "*** Starting WHZ Listening Server ***" << std::endl;
@@ -323,4 +563,3 @@ auto main() -> int {
  s.listen_and_serve();
  return 0;
 }
-*/

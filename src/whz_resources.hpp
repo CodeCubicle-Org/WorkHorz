@@ -11,7 +11,7 @@
 
 namespace whz {
 
-    enum class resource_type : std::uint8_t {
+    enum class resource_type : char8_t {
         CSS, /// Files with .css extension
         HTML, /// Files with .html extension
         WHZT, /// Files with .whzt extension, HTML templates for WHZ

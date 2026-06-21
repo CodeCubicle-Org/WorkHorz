@@ -6,7 +6,7 @@
 
 namespace WHZ {
 
-    enum class ResourceType {
+    enum class ResourceType: char8_t {
         CSS,        /// Files with .css extension
         HTML,       /// Files with .html extension
         WHZT,       /// Files with .whzt extension, HTML templates for WHZ

@@ -1,0 +1,44 @@
+# Exclude unnecessary files from Docker build context
+# This reduces build context size and prevents accidental inclusion
+
+# Documentation and archives
+*.md
+*.zip
+*.pdf
+*.txt
+!Dockerfile
+
+# Terraform files (not needed in image)
+*.tf
+*.tfstate
+*.tfvars
+
+# Git files
+.git
+.gitignore
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+

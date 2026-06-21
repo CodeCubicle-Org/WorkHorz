@@ -46,3 +46,23 @@ namespace whz {
     };
 
 } // whz
+
+
+/* LUA Examples:
+ ***************
+ 
+-- Lua usage examples
+local http_port = config.get("http_port")
+if http_port then
+    print("HTTP port is: " .. http_port)
+else
+    print("HTTP port not configured")
+end
+
+-- Lua usage examples
+local http_port = config.get("http_port")
+local db_name = config.get("db_name")
+local log_level = config.get("log_debug")
+local script_path = config.get("lua_script_path")
+
+*/
